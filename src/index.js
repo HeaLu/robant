@@ -3,7 +3,7 @@ const Discord = require("discord.js")
 const datefns = require('date-fns')
 const daily = require('./services/daily')
 var CronJob = require('cron').CronJob
-//const { default: axios } = require("axios")
+const { default: axios } = require("axios")
 
 const client = new Discord.Client({
   intents: [
@@ -18,7 +18,7 @@ client.once('ready', () => {
   console.log("AnT Reminder est dans la place !");
 })
 
-/*client.on('messageReactionAdd', async (reaction, user) => {
+client.on('messageReactionAdd', async (reaction, user) => {
 	// When a reaction is received, check if the structure is partial
 	if (reaction.partial) {
 		// If the message this reaction belongs to was removed, the fetching might result in an API error which should be handled
@@ -32,51 +32,55 @@ client.once('ready', () => {
 	}
   
   const langs = [
-    {target_lang: 'BG', label: 'Bulgarian', flags: ['🇧🇬']},
-    {target_lang: 'CS', label: 'Czech', flags: ['🇨🇿']},
-    {target_lang: 'DA', label: 'Danish', flags: ['🇩🇰']},
-    {target_lang: 'DE', label: 'German', flags: ['🇩🇪']},
-    {target_lang: 'EL', label: 'Greek', flags: ['🇬🇷']},
-    {target_lang: 'EN', label: 'English', flags: ['🇺🇸', '🇬🇧']},
-    {target_lang: 'ES', label: 'Spanish', flags: ['🇪🇸']},
-    {target_lang: 'ET', label: 'Estonian', flags: ['🇪🇪']},
-    {target_lang: 'FI', label: 'Finnish', flags: ['🇫🇮']},
-    {target_lang: 'FR', label: 'French', flags: ['🇫🇷']},
-    {target_lang: 'HU', label: 'Hungarian', flags: ['🇭🇺']},
-    {target_lang: 'IT', label: 'Italian', flags: ['🇮🇹']},
-    {target_lang: 'JA', label: 'Japanese', flags: ['🇯🇵']},
-    {target_lang: 'LT', label: 'Lithuanian', flags: ['🇱🇹']},
-    {target_lang: 'LV', label: 'Latvian', flags: ['🇱🇻']},
-    {target_lang: 'NL', label: 'Dutch', flags: ['🇳🇱']},
-    {target_lang: 'PL', label: 'Polish', flags: ['🇵🇱']},
-    {target_lang: 'PT', label: 'Portuguese', flags: ['🇵🇹', '🇧🇷']},
-    {target_lang: 'RO', label: 'Romanian', flags: ['🇷🇴']},
-    {target_lang: 'RU', label: 'Russian', flags: ['🇷🇺']},
-    {target_lang: 'SK', label: 'Slovak', flags: ['🇸🇰']},
-    {target_lang: 'SL', label: 'Slovenian', flags: ['🇸🇮']},
-    {target_lang: 'SV', label: 'Swedish', flags: ['🇸🇪']},
-    {target_lang: 'ZH', label: 'Chinese', flags: ['🇨🇳']}
+    {short: 'BG', label: 'Bulgarian', flags: ['🇧🇬']},
+    {short: 'CS', label: 'Czech', flags: ['🇨🇿']},
+    {short: 'DA', label: 'Danish', flags: ['🇩🇰']},
+    {short: 'DE', label: 'German', flags: ['🇩🇪']},
+    {short: 'EL', label: 'Greek', flags: ['🇬🇷']},
+    {short: 'EN', label: 'English', flags: ['🇺🇸', '🇬🇧']},
+    {short: 'ES', label: 'Spanish', flags: ['🇪🇸']},
+    {short: 'ET', label: 'Estonian', flags: ['🇪🇪']},
+    {short: 'FI', label: 'Finnish', flags: ['🇫🇮']},
+    {short: 'FR', label: 'French', flags: ['🇫🇷']},
+    {short: 'HU', label: 'Hungarian', flags: ['🇭🇺']},
+    {short: 'IT', label: 'Italian', flags: ['🇮🇹']},
+    {short: 'JA', label: 'Japanese', flags: ['🇯🇵']},
+    {short: 'LT', label: 'Lithuanian', flags: ['🇱🇹']},
+    {short: 'LV', label: 'Latvian', flags: ['🇱🇻']},
+    {short: 'NL', label: 'Dutch', flags: ['🇳🇱']},
+    {short: 'PL', label: 'Polish', flags: ['🇵🇱']},
+    {short: 'PT', label: 'Portuguese', flags: ['🇵🇹', '🇧🇷']},
+    {short: 'RO', label: 'Romanian', flags: ['🇷🇴']},
+    {short: 'RU', label: 'Russian', flags: ['🇷🇺']},
+    {short: 'SK', label: 'Slovak', flags: ['🇸🇰']},
+    {short: 'SL', label: 'Slovenian', flags: ['🇸🇮']},
+    {short: 'SV', label: 'Swedish', flags: ['🇸🇪']},
+    {short: 'ZH', label: 'Chinese', flags: ['🇨🇳']}
   ]
 
+  const targetLang = langs.find(lang => lang.flags.indexOf(reaction._emoji.name) !== -1)
   
+  if (!targetLang) return
 
-  for (const l of langs) {
-    const index = l.flags.indexOf(reaction._emoji.name)
-    if (index !== -1) {
-      let translator = {content: reaction.message.content, target: l}
-      const translation = await axios.get('https://api-free.deepl.com/v2/translate', {
-        params: {
-          target_lang: translator.target.target_lang,
-          text: translator.content,
-          auth_key: config.deepl.key
-        }
-      })
-      console.log(reaction.users);
-      //reaction.message.author.send('You wanted')
-      //console.log(translation.data);
+  const translation = await axios.get('https://api-free.deepl.com/v2/translate', {
+    params: {
+      target_lang: targetLang.short,
+      text: reaction.message.content,
+      auth_key: config.deepl.key
     }
-  }
-});*/
+  })
+
+  const originLang = langs.find(lang => lang.short === translation.data.translations[0].detected_source_language)
+
+  const message = `Your translation of **${reaction.message.author.username}**'s message, from ${originLang.flags[0]} **${originLang.label}** (detected):  
+  \`\`\`${translation.data.translations[0].text}\`\`\`
+  
+  **Original text:**  
+  >>> *${reaction.message.content}*`
+  
+  user.send(message)
+  reaction.remove()
+})
 
 client.on('interactionCreate', async interaction => {
 	if (!interaction.isCommand()) return;
@@ -167,6 +171,10 @@ client.on("messageCreate", message => {
       break
     case "!meta" :
       message.reply("🌪️👼")
+      break
+    case "!test" :
+      message.reply("!déçu que test soi**t** même pas utilisé (suggestion de Kam avec une correction sur la conjugaison)")
+      break
     default:
       break
   }

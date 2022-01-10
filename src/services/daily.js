@@ -47,7 +47,7 @@ const dailyData = {
     day: "Sunday", 
     tasks: "Groundhogs and insect", 
     actions: "Odd hours (1h, 3h, 5h, etc. UTC) for insects", 
-    tips: "Send pro 3 times to groundhog, then put your best special ants and insect to an other formation, send it 3 times to groundhog, , then put your best special ants and insect to an other formation, etc."
+    tips: "Send pro 3 times to groundhog, then put your best special ants and insect to an other formation, send it 3 times to groundhog, then put your best special ants and insect to an other formation, etc."
   }
 }
 
