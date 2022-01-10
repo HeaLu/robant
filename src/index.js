@@ -2,6 +2,7 @@ const config = require("./config/index")
 const Discord = require("discord.js")
 const datefns = require('date-fns')
 const daily = require('./services/daily')
+var CronJob = require('cron').CronJob
 //const { default: axios } = require("axios")
 
 const client = new Discord.Client({
@@ -170,6 +171,23 @@ client.on("messageCreate", message => {
       break
   }
 })
+/*const channelOfficers = client.channels.cache.get(config.channel.officers)
+const channelPublic = client.channels.cache.get(config.channel.public)
+console.log(channelPublic);
+const job = new cron ('45 11 * * *', function () {
+  channelOfficers.send("test0")
+  channelPublic.send("testp")
+  console.log('Running a job at 01:00')
+})
 
+job.start()*/
 
+const job = new CronJob('00 00 00 * * *', function() {
+  const today = new Date()
+  client.channels.cache.get(config.channel.officers).send(daily.getGameDaily(today))
+  client.channels.cache.get(config.channel.public).send(daily.getDiscordDaily(today))
+  console.log('Running a job at 01:00')
+}, null, true, 'UTC');
+
+job.start();
 client.login(config.discord.token)
