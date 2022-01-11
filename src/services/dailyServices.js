@@ -1,53 +1,54 @@
 const datefns = require("date-fns")
 
 const dailyData = {
-  monday: {
+  monday: { 
     day: "Monday", 
-    tasks: "Building", 
-    actions: "0h30 (SvS is not active before), 8h, 16h UTC", 
-    tips: "Watch the construction time of your biggest buildings, and start them in order they finish on Monday",
-    tomorrow: "Send your troops to harvest today, so that they finish as soon as possible when you are available after the 0h UTC reset"
+    tasks: "Buildings", 
+    actions: "0h30 (SvS is not active before), 5h, 13h, 21h UTC", 
+    tips: "Watch the construction time of your biggest buildings, and start them in order they finish on Monday", 
+    tomorrow: "Send your troops to harvest today, so that they finish as soon as possible when you are available after the 0h UTC reset. But don´t recall them before 0h30 when the Gathering event starts"
   },
-  tuesday: {
-    day: "Tuesday", 
-    tasks: "Harvesting and cells",
-    tips: "Send your troops harvesting the day before, in order the tile they are harvesting are empty a few minutes before you wake up",
-    tomorrow: "Launch a big evolution for tomorrow"
+  tuesday: { 
+    day: "Tuesday",
+    tasks: "Harvesting and Cells", 
+    actions: "1h, 5h, 7h, 9h, 13h, 15h, 21h, 23h UTC", 
+    tips: "Send your troops harvesting the day before, in order the tile they are harvesting are empty a few minutes before you wake up. Get the Cell material in Epoptic Funghi store, Alliance store or by hunting lizzards. ", 
+    tomorrow: "Launch a big evolution for tomorrow" 
   },
-  wednesday: {
+  wednesday: { 
     day: "Wednesday", 
-    tasks: "Evolutions", 
+    tasks: "Evolution", 
     actions: "1h, 9h, 17h UTC", 
-    tips: "The real power is in Evolutions, don't forget them !"
+    tips: "The real power is in Evolutions, don't forget them! Focus on achieving 100% Zone Develop. This will give you many times more points in svs and rich rewards. Check your evo progress in the Cave Challenge." 
   },
-  thursday: {
+  thursday: { 
     day: "Thursday", 
     tasks: "Special ants", 
-    actions: "Even hours (0h, 2h, 4h, etc. UTC)", 
-    tips: "Collect eggs all along the week, and hatch them on Thursday"
+    actions: "Even hours (0h30, 2h, 4h, etc. UTC)", 
+    tips: "Collect eggs all along the week, and hatch them on Thursday. Do not open all eggs at once. When you reach 3 shells in colony action, stop opening and wait for the next colony action. Get more points: use spores, gain experience (hunt wild, kiwi dew), unlock skills."
   },
-  friday: {
+  friday: { 
     day: "Friday", 
-    tasks: "Hatching and genes", 
-    actions: "5h, 6h, 13h, 14h, 21h, 22h UTC", 
-    tips: "Hatch your best with raspberry in order to play 2 colony action (example raspberry at 13h45 UTC to play 13h and 14h colony action with the same raspeberry). If you need SvS points at the end, you can still mutate some ants"
+    tasks: "Hatching and Genes", 
+    actions: "1h, 5h, 6h, 9h, 11h, 13h, 14h, 17h, 19h, 21h, 22h UTC", 
+    tips: "Hatch your best with raspberry in order to play 2 colony action (example raspberry at 13h45 UTC to play 13h and 14h colony action with the same raspeberry). If you need SvS points at the end, you can still mutate some ants. Get the Gene material in Mine store."
   },
-  saturday: {
+  saturday: { 
     day: "Saturday", 
-    tasks: "Free and germs",
-    tips: "Harvesting for cultivators, or hatching for herders and raider are the easiest"
+    tasks: "Free and Germs", 
+    tips: "Harvesting for cultivators, or hatching for herders and raider are the easiest. Get the Germ material in Duel store."
   },
-  sunday1: {
+  sunday1: { 
     day: "Sunday", 
-    tasks: "War Event and insect", 
+    tasks: "War Event and Insect", 
     actions: "Odd hours (1h, 3h, 5h, etc. UTC) for insects", 
-    tips: "Time for war ! You're not a fighter ? Go harvesting on ennemy server at about 150 feets from their tree. Harvest only level 7 tiles far from your anthill (50 to 100 feet). Your're a figher ? You know what you have to do."
+    tips: "Time for war! You're not a fighter? Go harvesting on enemy server at about 150 feets from their tree. Harvest only level 7 tiles far from your anthill (50 to 100 feet). Your're a figher? You know what you have to do."
   },
-  sunday2: {
+  sunday2: { 
     day: "Sunday", 
-    tasks: "Groundhogs and insect", 
+    tasks: "Groundhogs and Insect", 
     actions: "Odd hours (1h, 3h, 5h, etc. UTC) for insects", 
-    tips: "Send pro 3 times to groundhog, then put your best special ants and insect to an other formation, send it 3 times to groundhog, then put your best special ants and insect to an other formation, etc."
+    tips: "Raider class, full shooters, attack bonuses, berry. Tp closer to groundhog, share rallies. Send pro unit 3 times to groundhog, then put your best special ants and insect to an other formation, send it 3 times to gh, then put your best special ants and insect to an other formation, etc."
   }
 }
 
