@@ -65,19 +65,15 @@ function getDailyContent (d = new Date()) {
 
 const getDiscordDaily = (d = new Date()) => {
   const message = new MessageEmbed()
+  message.setColor('#0099ff')
   const c = getDailyContent(d)
   if (c.day) message.setTitle("📰 __The Daily AnT__ - " + c.day + "\n")
   if (c.tasks) message.addField("🏆 Today SvS", c.tasks + "\n")
   if (c.actions) message.addField("⏰ Colony actions", c.actions + "\n")
   if (c.tips) message.addField("👍🏽 AnTip", c.tips+ "\n")
   if (c.tomorrow) message.addField("📆 Prepare for tomorrow",  c.tomorrow)
+  
   return message
-  let text =  c.day ? "📰 **Daily AnT - " + c.day + "**\n\n" : "Daily AnT"
-  text = c.tasks ? text + "🏆 **Today SvS**\n" + c.tasks + "\n\n" : text
-  text = c.actions ? text + "⏰ **Colony actions**\n" + c.actions + "\n\n" : text
-  text = c.tips ? text + "👍🏽 **AnTip**\n" + c.tips + "\n\n" : text
-  text = c.tomorrow ? text + "📆 **Prepare for tomorrow**\n" + c.tomorrow : text
-  return text
 } 
 
 const getGameDaily = (d = new Date()) => {
