@@ -1,4 +1,5 @@
 const daily = require('../services/dailyServices')
+const ca = require("../services/caServices")
 const datefns = require('date-fns')
 
 module.exports = client => {
@@ -37,6 +38,9 @@ module.exports = client => {
         break
       case "sunday":
         interaction.reply({embeds: [daily.getDiscordDaily(datefns.isSunday(today) ? today : datefns.nextSunday(today))], ephemeral: true})
+        break
+      case "ca":
+        interaction.reply({embeds: [ca.getDiscordColonyActions(today)], ephemeral: true})
         break
       default:
         break

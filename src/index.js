@@ -1,6 +1,6 @@
 const config = require("./config/index")
 const Discord = require("discord.js")
-const daily = require('./discord/dailyControllers')
+const command = require('./discord/commandControllers')
 const translate = require('./discord/translateControllers')
 const cron = require('./discord/cronControllers')
 
@@ -13,11 +13,13 @@ const client = new Discord.Client({
 	partials: ['MESSAGE', 'CHANNEL', 'REACTION']
 })
 
-client.on('ready', () => {
+client.on('ready', async () => {
   console.log("AnT Reminder est dans la place !")
-  daily(client)
+  command(client)
   translate(client)
   cron(client)
+  //const test = await client.users.fetch('277817818815266827')
+  //test.send('🪖')
 })
 
 client.login(config.discord.token)

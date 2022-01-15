@@ -13,7 +13,8 @@ const commands = [
 	new SlashCommandBuilder().setName('thursday').setDescription('Displays Thursday Daily AnT'),
 	new SlashCommandBuilder().setName('friday').setDescription('Displays Friday Daily AnT'),
 	new SlashCommandBuilder().setName('saturday').setDescription('Displays Saturday Daily AnT'),
-	new SlashCommandBuilder().setName('sunday').setDescription('Displays next Sunday Daily AnT (groundhogs or war event)')
+	new SlashCommandBuilder().setName('sunday').setDescription('Displays next Sunday Daily AnT (groundhogs or war event)'),
+	new SlashCommandBuilder().setName('ca').setDescription('Displays current Colony Actions'),
 ]
 	.map(command => command.toJSON());
 

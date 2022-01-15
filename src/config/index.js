@@ -20,9 +20,14 @@ const config = {
   deepl: {
     key: process.env.DEEPL_KEY
   },
-  channel: {
+  channels: {
     officers: process.env.CHANNEL_OFFICERS,
-    public: process.env.CHANNEL_PUBLIC
+    public: process.env.CHANNEL_PUBLIC,
+    expedition: process.env.CHANNEL_EXPEDITION,
+    ca: process.env.CHANNEL_CA
+  },
+  roles: {
+    members: process.env.ROLE_MEMBERS
   }
 }
 
