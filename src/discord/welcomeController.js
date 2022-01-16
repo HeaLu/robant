@@ -3,7 +3,7 @@ const config = require("../config");
 
 module.exports = client => {
   client.on('guildMemberAdd', async member => {
-    const welcome = await client.channels.fetch(config.channels.ca)
+    const welcome = await client.channels.fetch(config.channels.welcome)
     let deleted
     do {
       deleted = await welcome.bulkDelete(100, true)
