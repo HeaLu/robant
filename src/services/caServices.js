@@ -170,12 +170,12 @@ const getHourColonyActions = (d = new Date()) => {
   .addField('\u200b', '\u200b')
   if (ok.length > 0 && pasok.length > 0) {
     message.addFields(
-      {name: `Matching SvS objective${ok.length > 1 ? "s" : ""}`, value: dispOk},
+      {name: `Matching SvS objectives`, value: dispOk},
       {name: '\n\u200b', value: '\n\u200b'},
-      {name: `Other${pasok.length > 1 ? "s" : "colo"}`, value: dispPasok}
+      {name: `Other${pasok.length > 1 ? "s" : ""}`, value: dispPasok}
     )
   } else if (ok.length > 0) {
-    message.addField(`Matching SvS objective${ok.length > 1 ? "s" : ""}`, dispOk)
+    message.addField(`Matching SvS objectives`, dispOk)
   } else if (pasok.length > 0) {
     message.addField(`Objective${pasok.length > 1 ? "s" : ""}`, dispPasok)
   }
