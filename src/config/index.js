@@ -24,10 +24,13 @@ const config = {
     officers: process.env.CHANNEL_OFFICERS,
     public: process.env.CHANNEL_PUBLIC,
     expedition: process.env.CHANNEL_EXPEDITION,
-    ca: process.env.CHANNEL_CA
+    ca: process.env.CHANNEL_CA,
+    welcome: process.env.CHANNEL_WELCOME
   },
   roles: {
-    members: process.env.ROLE_MEMBERS
+    members: process.env.ROLE_MEMBERS,
+    guests: process.env.ROLE_GUESTS,
+    admins: process.env.ROLE_ADMINS
   }
 }
 

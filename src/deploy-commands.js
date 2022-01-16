@@ -15,6 +15,8 @@ const commands = [
 	new SlashCommandBuilder().setName('saturday').setDescription('Displays Saturday Daily AnT'),
 	new SlashCommandBuilder().setName('sunday').setDescription('Displays next Sunday Daily AnT (groundhogs or war event)'),
 	new SlashCommandBuilder().setName('ca').setDescription('Displays current Colony Actions'),
+	new SlashCommandBuilder().setName('help').setDescription('Show all commands and functionnalities of RobAnT'),
+	new SlashCommandBuilder().setName('test').setDescription('Nothing here most of time, just to test works in progress'),
 ]
 	.map(command => command.toJSON());
 

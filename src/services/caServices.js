@@ -1,4 +1,4 @@
-const { getDay, getHours } = require('date-fns')
+const { getDay } = require('date-fns')
 const { MessageEmbed } = require('discord.js')
 
 const objectives = {
@@ -140,7 +140,7 @@ const colonyactions = {
   }
 }
 
-const getDiscordColonyActions = (d = new Date()) => {
+const getHourColonyActions = (d = new Date()) => {
   const day = getDay(d)
   let hour = d.getUTCHours()
 
@@ -164,22 +164,23 @@ const getDiscordColonyActions = (d = new Date()) => {
   }
 
   const message = new MessageEmbed()
-  .setColor('#0099ff')
-  .setTitle("Colony action - "+d.getUTCHours()+ "h to "+(d.getUTCHours()+1)+"h UTC")
-  .setDescription(ok.length > 0 ? `👌 ${ok.length} objective${ok.length > 1 ? "s" : 0} matching today SvS` : "❌ no match with today SvS")
+  .setColor(ok.length > 0 ? '#00FF00' : '#ff0000')
+  .setTitle("Colony actions - "+d.getUTCHours()+ "h to "+(d.getUTCHours()+1)+"h UTC")
+  .setDescription(ok.length > 0 ? `👍 ${ok.length} shared objective${ok.length > 1 ? "s" : ""} with SvS\rDon't forget raspberry !` : "❌ no shared objective with SvS")
   .addField('\u200b', '\u200b')
   if (ok.length > 0 && pasok.length > 0) {
     message.addFields(
-      {name: `Common SvS objective${ok.length > 1 ? "s" : 0}`, value: dispOk},
+      {name: `Matching SvS objective${ok.length > 1 ? "s" : ""}`, value: dispOk},
       {name: '\n\u200b', value: '\n\u200b'},
-      {name: `Other${pasok.length > 1 ? "s" : 0}`, value: dispPasok}
+      {name: `Other${pasok.length > 1 ? "s" : "colo"}`, value: dispPasok}
     )
   } else if (ok.length > 0) {
-    message.addField(`Common SvS objective${ok.length > 1 ? "s" : 0}`, dispOk)
+    message.addField(`Matching SvS objective${ok.length > 1 ? "s" : ""}`, dispOk)
   } else if (pasok.length > 0) {
-    message.addField(`Objective${pasok.length > 1 ? "s" : 0}`, dispPasok)
+    message.addField(`Objective${pasok.length > 1 ? "s" : ""}`, dispPasok)
   }
+
   return message
 }
 
-exports.getDiscordColonyActions = getDiscordColonyActions
+exports.getHourColonyActions = getHourColonyActions

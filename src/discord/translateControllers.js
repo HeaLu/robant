@@ -21,7 +21,7 @@ module.exports = client => {
     const originLang = translate.getLang(translation.detected_source_language)
 
     const message = new MessageEmbed()
-    .setColor('#0099ff')
+    .setColor('#ff0000')
     .setTitle('Your translation')
     .setAuthor({ name: `${reaction.message.author.username}`, iconURL: `${reaction.message.author.displayAvatarURL()}` })
     .setDescription(`[🔗 **Jump to message**](${reaction.message.url})`)

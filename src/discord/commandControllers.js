@@ -1,6 +1,46 @@
 const daily = require('../services/dailyServices')
 const ca = require("../services/caServices")
 const datefns = require('date-fns')
+const config = require('../config')
+
+const help = {
+  color: 0xff0000,
+  title: 'Manual of RobAnT',
+  author: {
+    name: "RobAnT",
+    icon_url: "https://cdn.discordapp.com/app-icons/929654147471540234/ab4bf5bc1b1229497e5c0d4c8d85397b.png?size=256"
+  },
+  fields: [
+    {
+      name: "The Daily AnT - Discord version",
+      value: "Type **/today, /tomorrow, /monday, /tuesday**, etc. to get The Daily AnT"
+    },
+    {
+      name: "The Daily AnT - In game version",
+      value: "Type **/daily** to get The Daily AnT without emojis"
+    },
+    {
+      name: "Colony actions",
+      value: "Type **/ca** to see current colony actions"
+    },
+    {
+      name: "Translator",
+      value: "React with a flag 🇬🇧🇫🇷🇷🇺 (24 language availables) to get the translation of a text by private message"
+    },
+    {
+      name: "Scheduled tasks",
+      value: "Colony actions each hour at xh05\nDaily AnT each day at 0h UTC\nNew alliance expedition poll each saturday at 0h UTC"
+    },
+    {
+      name: "Welcome",
+      value: "RobAnT says Hello to newcomers"
+    },
+    {
+      name: "Want more ?",
+      value: "If you have any idea to improve RobAnT, feel free to share it with me <@277817818815266827> !"
+    }
+  ]
+}
 
 module.exports = client => {
   client.on('interactionCreate', async interaction => {
@@ -40,7 +80,13 @@ module.exports = client => {
         interaction.reply({embeds: [daily.getDiscordDaily(datefns.isSunday(today) ? today : datefns.nextSunday(today))], ephemeral: true})
         break
       case "ca":
-        interaction.reply({embeds: [ca.getDiscordColonyActions(today)], ephemeral: true})
+        interaction.reply({embeds: [ca.getHourColonyActions()], ephemeral: true})
+        break
+      case "help":
+        interaction.reply({embeds: [help], ephemeral: true})
+        break
+      case "test" :
+        interaction.reply("Nothing atm...")
         break
       default:
         break
@@ -48,41 +94,7 @@ module.exports = client => {
   })
   
   client.on("messageCreate", message => {
-    const today = new Date()
     switch (message.content) {
-      case "!daily": 
-        message.reply(daily.getGameDaily(today))
-        break
-      case "!today": 
-        message.reply({embeds: [daily.getDiscordDaily(today)]})
-        break
-      case "!tomorrow":
-        message.reply({embeds: [daily.getDiscordDaily(datefns.addDays(today, 1))]})
-        break
-      case "!monday":
-        message.reply({embeds: [daily.getDiscordDaily(datefns.nextMonday(today))]})
-        break
-      case "!tuesday":
-        message.reply({embeds: [daily.getDiscordDaily(datefns.nextTuesday(today))]})
-        break
-      case "!wednesday":
-        message.reply({embeds: [daily.getDiscordDaily(datefns.nextWednesday(today))]})
-        break
-      case "!thursday":
-        message.reply({embeds: [daily.getDiscordDaily(datefns.nextThursday(today))]})
-        break
-      case "!friday":
-        message.reply({embeds: [daily.getDiscordDaily(datefns.nextFriday(today))]})
-        break
-      case "!saturday":
-        message.reply({embeds: [daily.getDiscordDaily(datefns.nextSaturday(today))]})
-        break
-      case "!sunday":
-        message.reply({embeds: [daily.getDiscordDaily(datefns.isSunday(today) ? today : datefns.nextSunday(today))]})
-        break
-      case "!help":
-        message.reply("RobAnT help:\nType !monday, !tuesday, etc., !today or !tomorrow to get daily event objectives. !daily gives today event without emojis");
-        break
       case "!borek":
         message.reply("🍺🥂")
         break

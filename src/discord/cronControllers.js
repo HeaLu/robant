@@ -1,7 +1,7 @@
 const CronJob = require('cron').CronJob
 const daily = require('../services/dailyServices')
 const ca = require('../services/caServices')
-const { nextFriday, format } = require('date-fns')
+const { nextFriday, format, addHours } = require('date-fns')
 const config = require('../config')
 const { MessageEmbed } = require('discord.js')
 
@@ -17,11 +17,17 @@ module.exports = client => {
   dailyAnt.start();
 
   const expedition = new CronJob('00 00 00 * * SAT', async function () {
+    const channel = await client.channels.fetch(config.channels.expedition)
+    let deleted;
+    do {
+      deleted = await channel.bulkDelete(100);
+    } while (deleted.size != 0);
+
     const today = new Date()
     const friday = format(nextFriday(today), "EEEE, MMMM d")
 
     const message = new MessageEmbed()
-    .setColor('#0099ff')
+    .setColor('#ff0000')
     .setTitle("Alliance expedition of " + friday)
     .setDescription(`<@&${config.roles.members}> please indicate when you are available. You can react to any time you think you can be ready`)
     .addFields(
@@ -42,8 +48,19 @@ module.exports = client => {
 
   expedition.start()
 
-  const colonyactions = new CronJob('00 05 * * * *', function () {
-    client.channels.cache.get(config.channels.ca).send({embeds: [ca.getDiscordColonyActions()]})
+  const colonyactions = new CronJob('00 05 * * * *', async function () {
+    const today = new Date()
+    const channel = await client.channels.fetch(config.channels.ca)
+    let deleted;
+    do {
+      deleted = await channel.bulkDelete(100);
+    } while (deleted.size != 0);
+
+    const currentCa = ca.getHourColonyActions()
+    const nextCa = ca.getHourColonyActions(addHours(today, 1))
+    nextCa.setTitle("Next colony actions")
+    
+    client.channels.cache.get(config.channels.ca).send({embeds: [currentCa, nextCa]})
   }, null, true, 'UTC')
 
   colonyactions.start()
