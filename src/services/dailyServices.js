@@ -43,13 +43,15 @@ const dailyData = {
     day: "Sunday", 
     tasks: "War Event and Insect", 
     actions: "Odd hours (1h, 3h, 5h, etc. UTC) for insects", 
-    tips: "Time for war! You're not a fighter? Go harvesting on enemy server at about 150 feets from their tree. Harvest only level 7 tiles far from your anthill (50 to 100 feet). Your're a figher? You know what you have to do."
+    tips: "Time for war! You're not a fighter? Go harvesting on enemy server at about 150 feets from their tree. Harvest only level 7 tiles far from your anthill (50 to 100 feet). Your're a fighter? You know what you have to do.",
+    tomorrow: "If you didn't do it last days, send some big buildings"
   },
   sunday2: { 
     day: "Sunday", 
     tasks: "Groundhogs and Insect", 
     actions: "Odd hours (1h, 3h, 5h, etc. UTC) for insects", 
-    tips: "Raider class, full shooters, attack bonuses, berry. Tp closer to groundhog, share rallies. Send pro unit 3 times to groundhog, then put your best special ants and insect to an other formation, send it 3 times to gh, then put your best special ants and insect to an other formation, etc."
+    tips: "Raider class, full shooters, attack bonuses, berry. Tp closer to groundhog, share rallies. Send pro unit 3 times to groundhog, then put your best special ants and insect to an other formation, send it 3 times to gh, then put your best special ants and insect to an other formation, etc.",
+    tomorrow: "If you didn't do it last days, send some big buildings"
   }
 }
 

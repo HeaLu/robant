@@ -144,7 +144,7 @@ const getHourColonyActions = (d = new Date()) => {
   const day = getDay(d)
   let hour = d.getUTCHours()
 
-  while (hour > 8) {
+  while (hour > 7) {
     hour = hour - 8
   }
   
