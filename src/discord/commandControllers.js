@@ -1,7 +1,6 @@
 const daily = require('../services/dailyServices')
 const ca = require("../services/caServices")
 const datefns = require('date-fns')
-const config = require('../config')
 
 const help = {
   color: 0xff0000,
@@ -21,7 +20,7 @@ const help = {
     },
     {
       name: "Colony actions",
-      value: "Type **/ca** to see current colony actions"
+      value: "Type **/ca** to see current colony actions and all colony actions matching SvS goals"
     },
     {
       name: "Translator",
@@ -80,13 +79,13 @@ module.exports = client => {
         interaction.reply({embeds: [daily.getDiscordDaily(datefns.isSunday(today) ? today : datefns.nextSunday(today))], ephemeral: true})
         break
       case "ca":
-        interaction.reply({embeds: [ca.getHourColonyActions()], ephemeral: true})
+        interaction.reply({embeds: [ca.getHourColonyActions(), ca.getDayColonyActions()], ephemeral: true})
         break
       case "help":
         interaction.reply({embeds: [help], ephemeral: true})
         break
       case "test" :
-        interaction.reply("Nothing atm...")
+        interaction.reply({embeds: [daily.getDiscord2Daily(today)], ephemeral: true})
         break
       default:
         break
@@ -106,6 +105,9 @@ module.exports = client => {
         break
       case "!meta" :
         message.reply("🌪️👼")
+        break
+      case "!new" :
+        message.reply({embeds: [daily.getDiscordDaily(), daily.getDiscord2Daily()]})
         break
       case "!test" :
         message.reply("!déçu que test soi**t** même pas utilisé (suggestion de Kam avec une correction sur la conjugaison)")

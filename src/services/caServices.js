@@ -1,7 +1,7 @@
-const { getDay } = require('date-fns')
+const { getDay, startOfDay } = require('date-fns')
 const { MessageEmbed } = require('discord.js')
 
-const objectives = {
+const goals = {
   0: {
     label: "Use any speedup",
     pic: "🕖"
@@ -140,7 +140,7 @@ const colonyactions = {
   }
 }
 
-const getHourColonyActions = (d = new Date()) => {
+const getHourComparative = (d = new Date()) => {
   const day = getDay(d)
   let hour = d.getUTCHours()
 
@@ -150,37 +150,125 @@ const getHourColonyActions = (d = new Date()) => {
   
   const nowCA = colonyactions[day][hour]
   const svs = colonyactions[day].svs
-
+  
   const ok = nowCA.filter(o => svs.indexOf(o) !== -1)
   const pasok = nowCA.filter(o => svs.indexOf(o) === -1)
-  let dispOk = ""
-  let dispPasok = ""
-  for (const i of ok) {
-    dispOk = dispOk + objectives[i].pic + " - " + objectives[i].label+"\n"
+
+  return {svs: ok, others: pasok}
+}
+
+const getDayComparative = (d = new Date()) => {
+  const date = startOfDay(d)
+  const day = getDay(date)
+
+  let tab = {}
+
+  for (let i = 0; i < 8; i++) {
+    const nowCA = colonyactions[day][i]
+    const svs = colonyactions[day].svs
+    const ok = nowCA.filter(o => svs.indexOf(o) !== -1)
+    
+    if (ok.length > 0) {
+      tab[i] = ok
+    }
+  }
+  
+  return tab
+}
+
+function arraysEqual(a1,a2) {
+  return JSON.stringify(a1)==JSON.stringify(a2);
+}
+
+const getSortedDayComparative = (d = new Date()) => {
+  const daygoals = getDayComparative(d)
+  let newtab = []
+
+  for (const [key, value] of Object.entries(daygoals)) {
+    let match = newtab.findIndex(el => arraysEqual(el.goals, value))
+    if (match === -1) {
+      newtab.push({hours: [parseInt(key)], goals: value})
+    } else {
+      newtab[match].hours.push(parseInt(key))
+    }
   }
 
-  for (const i of pasok) {
-    dispPasok = dispPasok + objectives[i].pic + " - " + objectives[i].label+"\n"
+  newtab.sort((a, b) => b.goals.length - a.goals.length)
+
+  return newtab
+}
+
+const getHourColonyActions = (d = new Date()) => {
+
+  const comp = getHourComparative(d)
+  let dispOk = ""
+  let dispPasok = ""
+
+  for (const i of comp.svs) {
+    dispOk = dispOk + goals[i].pic + " - " + goals[i].label+"\n"
+  }
+
+  for (const i of comp.others) {
+    dispPasok = dispPasok + goals[i].pic + " - " + goals[i].label+"\n"
   }
 
   const message = new MessageEmbed()
-  .setColor(ok.length > 0 ? '#00FF00' : '#ff0000')
+  .setColor(comp.svs.length > 0 ? '#00ff00' : '#ff0000')
   .setTitle("Colony actions - "+d.getUTCHours()+ "h to "+(d.getUTCHours()+1)+"h UTC")
-  .setDescription(ok.length > 0 ? `👍 ${ok.length} shared objective${ok.length > 1 ? "s" : ""} with SvS\rDon't forget raspberry !` : "❌ no shared objective with SvS")
-  .addField('\u200b', '\u200b')
-  if (ok.length > 0 && pasok.length > 0) {
+  .setDescription(comp.svs.length > 0 ? `🟢 ${comp.svs.length} shared goal${comp.svs.length > 1 ? "s" : ""} with SvS 🟢\nDon't forget raspberry 👍🏼` : "🔴 no shared goal with SvS 🔴")
+  if (comp.svs.length > 0 && comp.others.length > 0) {
     message.addFields(
-      {name: `Matching SvS objectives`, value: dispOk},
-      {name: '\n\u200b', value: '\n\u200b'},
-      {name: `Other${pasok.length > 1 ? "s" : ""}`, value: dispPasok}
+      {name: `Matching SvS goals`, value: dispOk},
+      {name: `Other${comp.others.length > 1 ? "s" : ""}`, value: dispPasok}
     )
-  } else if (ok.length > 0) {
-    message.addField(`Matching SvS objectives`, dispOk)
-  } else if (pasok.length > 0) {
-    message.addField(`Objective${pasok.length > 1 ? "s" : ""}`, dispPasok)
+  } else if (comp.svs.length > 0) {
+    message.addField(`Matching SvS goals`, dispOk)
+  } else if (comp.others.length > 0) {
+    message.addField(`Goal${comp.others.length > 1 ? "s" : ""}`, dispPasok)
   }
 
   return message
 }
 
+const getDayColonyActions = (d = new Date()) => {
+  const tab = getSortedDayComparative(d)
+  const message = new MessageEmbed()
+  .setColor("BLUE")
+  .setTitle("Today raspberry times")
+  .setDescription("Here are colony actions sharing goals with SvS ")
+
+  for (const item of tab) {
+    let dispObj = ""
+    let dispHours = ""
+
+    for (let i = 0; i < 3; i++) {
+      for (const j in item.hours) {
+        dispHours = dispHours+(item.hours[j]*1+i*8 === 0 ? "0h30, " : item.hours[j]*1+i*8+"h, ")
+      }
+    }
+    dispHours = dispHours.substring(0, dispHours.length - 2) + " UTC"
+
+    for (const obj of item.goals) {
+      dispObj=dispObj+goals[obj].pic+" - "+goals[obj].label+"\n"
+    }
+    message.addField(dispHours,dispObj)
+  }
+
+  return message
+}
+
+const getGoals = (obj) => {
+  return goals[obj]
+}
+
+const getSvs = (d = new Date()) => {
+  const day = getDay(d)
+  return colonyactions[day].svs
+}
+
+exports.getSortedDayComparative = getSortedDayComparative
+exports.getHourComparative = getHourComparative
+exports.getDayColonyActions = getDayColonyActions
+exports.getGoals = getGoals
+exports.getSvs = getSvs
 exports.getHourColonyActions = getHourColonyActions

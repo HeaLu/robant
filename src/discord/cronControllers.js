@@ -11,7 +11,6 @@ module.exports = client => {
     const today = new Date()
     client.channels.cache.get(config.channels.officers).send(daily.getGameDaily(today))
     client.channels.cache.get(config.channels.public).send({embeds: [daily.getDiscordDaily(today)]})
-    console.log('Running a job at 01:00')
   }, null, true, 'UTC');
   
   dailyAnt.start();
@@ -57,10 +56,11 @@ module.exports = client => {
     } while (deleted.size != 0);
 
     const currentCa = ca.getHourColonyActions()
+    const dayCa = ca.getDayColonyActions()
     const nextCa = ca.getHourColonyActions(addHours(today, 1))
-    nextCa.setTitle("Next colony actions")
+    nextCa.setTitle("Next hour colony actions")
     
-    client.channels.cache.get(config.channels.ca).send({embeds: [currentCa, nextCa]})
+    client.channels.cache.get(config.channels.ca).send({embeds: [currentCa, nextCa, dayCa]})
   }, null, true, 'UTC')
 
   colonyactions.start()

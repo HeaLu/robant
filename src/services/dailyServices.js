@@ -1,5 +1,6 @@
 const datefns = require("date-fns")
 const { MessageEmbed } = require('discord.js')
+const { getGoals, getSortedDayComparative, getSvs } = require("./caServices")
 
 const dailyData = {
   monday: { 
@@ -78,6 +79,50 @@ const getDiscordDaily = (d = new Date()) => {
   return message
 } 
 
+const getDiscord2Daily = (d = new Date()) => {
+  const tab = getSortedDayComparative(d)  
+  const obj = getSvs()
+
+  let svs = ""
+  for (const task of obj) {
+    svs = svs + getGoals(task).label+"\n"
+  }
+
+  let actions = ""
+
+  for (const item of tab) {
+    let dispObj = ""
+    let dispHours = ""
+
+    for (let i = 0; i < 3; i++) {
+      for (const j in item.hours) {
+        dispHours = dispHours+(item.hours[j]*1+i*8 === 0 ? "0h30, " : item.hours[j]*1+i*8+"h, ")
+      }
+    }
+    dispHours = dispHours.substring(0, dispHours.length - 2) + " UTC"
+
+    for (const obj of item.goals) {
+      dispObj=dispObj+getGoals(obj).label+"\n"
+    }
+    actions = actions + "**" +dispHours + "**\n" + dispObj
+  }
+
+  const message = new MessageEmbed()
+  message.setColor('#ff0000')
+  const c = getDailyContent(d)
+  if (c.day) message.setTitle("📰 __The Daily AnT__ - " + c.day + "\n")
+
+
+
+  if (svs) message.addField("🏆 Today SvS", svs + "\n")
+  
+  if (actions) message.addField("⏰ Colony actions", actions + "\n")
+  if (c.tips) message.addField("👍🏽 AnTip", c.tips+ "\n")
+  if (c.tomorrow) message.addField("📆 Prepare for tomorrow",  c.tomorrow)
+  
+  return message
+} 
+
 const getGameDaily = (d = new Date()) => {
   const c = getDailyContent(d)
   let text =  c.day ? "The Daily AnT - " + c.day + ":\n\n" : "Daily AnT"
@@ -89,4 +134,5 @@ const getGameDaily = (d = new Date()) => {
 }
 
 exports.getDiscordDaily = getDiscordDaily
+exports.getDiscord2Daily = getDiscord2Daily
 exports.getGameDaily = getGameDaily
