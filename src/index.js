@@ -16,14 +16,11 @@ const client = new Discord.Client({
 })
 
 client.on('ready', async () => {
-  console.log("AnT Reminder est dans la place !")
+  console.log("RobAnT is here !")
   command(client)
-  translate(client)
   cron(client)
-  welcome(client)
-  
-  //const test = await client.users.fetch('277817818815266827')
-  //test.send('🪖')
+  if (config.deepl) translate(client)
+  if (config.channels.welcome && config.roles.guests && config.roles.admins ) welcome(client)
 })
 
 client.login(config.discord.token)
