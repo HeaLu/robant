@@ -1,4 +1,4 @@
-const datefns = require("date-fns")
+const { isMonday, isTuesday, isWednesday, isThursday, isFriday, isSaturday, isSunday, getWeek } = require("date-fns")
 const { MessageEmbed } = require('discord.js')
 const { getGoals, getSortedDayComparative, getSvs } = require("./caServices")
 
@@ -57,13 +57,13 @@ const dailyData = {
 }
 
 function getDailyContent (d = new Date()) {
-  if (datefns.isMonday(d)) return dailyData.monday
-  if (datefns.isTuesday(d)) return dailyData.tuesday
-  if (datefns.isWednesday(d))  return dailyData.wednesday
-  if (datefns.isThursday(d)) return dailyData.thursday
-  if (datefns.isFriday(d)) return dailyData.friday
-  if (datefns.isSaturday(d)) return dailyData.saturday
-  if (datefns.isSunday(d)) return datefns.getWeek(d)%2 === 0 ? dailyData.sunday1 : dailyData.sunday2
+  if (isMonday(d)) return dailyData.monday
+  if (isTuesday(d)) return dailyData.tuesday
+  if (isWednesday(d))  return dailyData.wednesday
+  if (isThursday(d)) return dailyData.thursday
+  if (isFriday(d)) return dailyData.friday
+  if (isSaturday(d)) return dailyData.saturday
+  if (isSunday(d)) return getWeek(d)%2 === 0 ? dailyData.sunday1 : dailyData.sunday2
 }
 
 const getDiscordDaily = (d = new Date()) => {

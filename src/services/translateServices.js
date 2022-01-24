@@ -11,7 +11,7 @@ const langs = [
   {short: 'ES', label: 'Spanish', flags: ['🇪🇸']},
   {short: 'ET', label: 'Estonian', flags: ['🇪🇪']},
   {short: 'FI', label: 'Finnish', flags: ['🇫🇮']},
-  {short: 'FR', label: 'French', flags: ['🇫🇷']},
+  {short: 'FR', label: 'French', flags: ['🇫🇷','🇨🇵']},
   {short: 'HU', label: 'Hungarian', flags: ['🇭🇺']},
   {short: 'IT', label: 'Italian', flags: ['🇮🇹']},
   {short: 'JA', label: 'Japanese', flags: ['🇯🇵']},
@@ -31,6 +31,7 @@ const langs = [
 //Prend un emoji ou une str, et renvoi la lang si l'emoji ou le short est connu
 const getLang = (str) => {
   const targetLang = langs.find(lang => (lang.flags.indexOf(str) !== -1) || (lang.short === str))
+
   
   if (!targetLang) {
     return false

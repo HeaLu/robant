@@ -32,7 +32,7 @@ module.exports = client => {
       { name: '**Original text:**', value: `>>> *${reaction.message.content}*`}
     )
 
-    user.send({ embeds: [message] })    
+    user.send({ embeds: [message] })
     reaction.remove()
   })
 }

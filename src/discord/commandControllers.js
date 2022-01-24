@@ -1,6 +1,6 @@
 const daily = require('../services/dailyServices')
 const ca = require("../services/caServices")
-const datefns = require('date-fns')
+const { addDays, nextMonday, nextTuesday, nextWednesday, nextThursday, nextFriday, nextSaturday, isSunday, nextSunday } = require('date-fns')
 
 const help = {
   color: 0xff0000,
@@ -55,28 +55,28 @@ module.exports = client => {
         interaction.reply({embeds: [daily.getDiscordDaily(today)], ephemeral: true})
         break
       case "tomorrow":
-        interaction.reply({embeds: [daily.getDiscordDaily(datefns.addDays(today, 1))], ephemeral: true})
+        interaction.reply({embeds: [daily.getDiscordDaily(addDays(today, 1))], ephemeral: true})
         break
       case "monday":
-        interaction.reply({embeds: [daily.getDiscordDaily(datefns.nextMonday(today))], ephemeral: true})
+        interaction.reply({embeds: [daily.getDiscordDaily(nextMonday(today))], ephemeral: true})
         break
       case "tuesday":
-        interaction.reply({embeds: [daily.getDiscordDaily(datefns.nextTuesday(today))], ephemeral: true})
+        interaction.reply({embeds: [daily.getDiscordDaily(nextTuesday(today))], ephemeral: true})
         break
       case "wednesday":
-        interaction.reply({embeds: [daily.getDiscordDaily(datefns.nextWednesday(today))], ephemeral: true})
+        interaction.reply({embeds: [daily.getDiscordDaily(nextWednesday(today))], ephemeral: true})
         break
       case "thursday":
-        interaction.reply({embeds: [daily.getDiscordDaily(datefns.nextThursday(today))], ephemeral: true})
+        interaction.reply({embeds: [daily.getDiscordDaily(nextThursday(today))], ephemeral: true})
         break
       case "friday":
-        interaction.reply({embeds: [daily.getDiscordDaily(datefns.nextFriday(today))], ephemeral: true})
+        interaction.reply({embeds: [daily.getDiscordDaily(nextFriday(today))], ephemeral: true})
         break
       case "saturday":
-        interaction.reply({embeds: [daily.getDiscordDaily(datefns.nextSaturday(today))], ephemeral: true})
+        interaction.reply({embeds: [daily.getDiscordDaily(nextSaturday(today))], ephemeral: true})
         break
       case "sunday":
-        interaction.reply({embeds: [daily.getDiscordDaily(datefns.isSunday(today) ? today : datefns.nextSunday(today))], ephemeral: true})
+        interaction.reply({embeds: [daily.getDiscordDaily(isSunday(today) ? today : nextSunday(today))], ephemeral: true})
         break
       case "ca":
         interaction.reply({embeds: [ca.getHourColonyActions(), ca.getDayColonyActions()], ephemeral: true})

@@ -1,4 +1,3 @@
-const { getDay, startOfDay } = require('date-fns')
 const { MessageEmbed } = require('discord.js')
 
 const goals = {
@@ -141,7 +140,7 @@ const colonyactions = {
 }
 
 const getHourComparative = (d = new Date()) => {
-  const day = getDay(d)
+  const day = d.getUTCDay()
   let hour = d.getUTCHours()
 
   while (hour > 7) {
@@ -158,8 +157,7 @@ const getHourComparative = (d = new Date()) => {
 }
 
 const getDayComparative = (d = new Date()) => {
-  const date = startOfDay(d)
-  const day = getDay(date)
+  const day = d.getUTCDay()
 
   let tab = {}
 
@@ -214,7 +212,7 @@ const getHourColonyActions = (d = new Date()) => {
 
   const message = new MessageEmbed()
   .setColor(comp.svs.length > 0 ? '#00ff00' : '#ff0000')
-  .setTitle("Colony actions - "+d.getUTCHours()+ "h to "+(d.getUTCHours()+1)+"h UTC")
+  .setTitle("Colony actions - "+(d.getUTCHours() === 0 && comp.svs.length > 0 ? "0h30" : d.getUTCHours()+"h")+ " to "+(d.getUTCHours()+1 === 24 ? 0 : d.getUTCHours()+1)+"h UTC")
   .setDescription(comp.svs.length > 0 ? `🟢 ${comp.svs.length} shared goal${comp.svs.length > 1 ? "s" : ""} with SvS 🟢\nDon't forget raspberry 👍🏼` : "🔴 no shared goal with SvS 🔴")
   if (comp.svs.length > 0 && comp.others.length > 0) {
     message.addFields(
@@ -262,7 +260,7 @@ const getGoals = (obj) => {
 }
 
 const getSvs = (d = new Date()) => {
-  const day = getDay(d)
+  const day = d.getUTCDay()
   return colonyactions[day].svs
 }
 
