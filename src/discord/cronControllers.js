@@ -16,8 +16,8 @@ module.exports = client => {
   dailyAnt.start();
   
   if (config.channels.expedition && config.roles.members) {
+    const channel = await client.channels.fetch(config.channels.expedition)
     const expedition = new CronJob('00 00 00 * * SAT', async function () {
-      const channel = await client.channels.fetch(config.channels.expedition)
       let deleted;
       do {
         deleted = await channel.bulkDelete(100);
@@ -47,7 +47,18 @@ module.exports = client => {
     }, null, true, 'UTC')
   
     expedition.start()
+
+    const remind = new CronJob('00 00 00 * * WED', function () {
+      const message = new MessageEmbed()
+      .setColor('#ff0000')
+      .setTitle("Reminder")
+      .setDescription(`<@&${config.roles.members}> please don't forget to give your availabilities !`)
+      client.channels.cache.get(config.channels.expedition).send({embeds: [message]})
+    })
+
+    remind.start
   }
+  
   
   if (config.channels.ca) {
     const colonyactions = new CronJob('00 05 * * * *', async function () {
