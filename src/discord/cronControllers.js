@@ -7,7 +7,7 @@ const { MessageEmbed } = require('discord.js')
 
 
 module.exports = client => {
-  const dailyAnt = new CronJob('00 00 00 * * *', function() {
+  const dailyAnt = new CronJob('00 00 00 * * *', async function() {
     const today = new Date()
     if (config.channels.officers) client.channels.cache.get(config.channels.officers).send(daily.getGameDaily(today))
     if (config.channels.public) client.channels.cache.get(config.channels.public).send({embeds: [daily.getDiscordDaily(today)]})
@@ -16,8 +16,8 @@ module.exports = client => {
   dailyAnt.start();
   
   if (config.channels.expedition && config.roles.members) {
-    const channel = await client.channels.fetch(config.channels.expedition)
     const expedition = new CronJob('00 00 00 * * SAT', async function () {
+      const channel = await client.channels.fetch(config.channels.expedition)
       let deleted;
       do {
         deleted = await channel.bulkDelete(100);
@@ -48,7 +48,8 @@ module.exports = client => {
   
     expedition.start()
 
-    const remind = new CronJob('00 00 00 * * WED', function () {
+    const remind = new CronJob('00 00 00 * * WED', async function () {
+      const channel = await client.channels.fetch(config.channels.expedition)
       const message = new MessageEmbed()
       .setColor('#ff0000')
       .setTitle("Reminder")
