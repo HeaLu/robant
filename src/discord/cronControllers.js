@@ -48,7 +48,7 @@ module.exports = client => {
   
     expedition.start()
 
-    const remind = new CronJob('00 00 00 * * WED', async function () {
+    const remind = new CronJob('00 51 07 * * WED', async function () {
       const channel = await client.channels.fetch(config.channels.expedition)
       const message = new MessageEmbed()
       .setColor('#ff0000')
@@ -57,7 +57,7 @@ module.exports = client => {
       client.channels.cache.get(config.channels.expedition).send({embeds: [message]})
     })
 
-    remind.start
+    remind.start()
   }
   
   
