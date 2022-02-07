@@ -98,13 +98,22 @@ module.exports = client => {
         message.reply("🍺🥂")
         break
       case "!hana" :
-        message.reply("👸💖")
+        message.reply("👸🎼")
         break
       case "!kam" :
         message.reply("⚔️😈")
         break
       case "!meta" :
         message.reply("🌪️👼")
+        break
+      case "!iesu" :
+        message.reply("🚜👩‍💻")
+        break
+      case "!thm" :
+        message.reply("🛡️🔩")
+        break
+      case "!healu" :
+        message.reply("♔🖥️")
         break
       case "!new" :
         message.reply({embeds: [daily.getDiscordDaily(), daily.getDiscord2Daily()]})
