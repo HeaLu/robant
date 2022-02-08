@@ -8,7 +8,7 @@ const welcome = require("./discord/welcomeController")
 const client = new Discord.Client({
   intents: [
     Discord.Intents.FLAGS.GUILDS,
-    Discord.Intents.DIRECT_MESSAGES,
+    Discord.Intents.FLAGS.DIRECT_MESSAGES,
     Discord.Intents.FLAGS.GUILD_MESSAGES,
     Discord.Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
     Discord.Intents.FLAGS.GUILD_MEMBERS
@@ -17,7 +17,7 @@ const client = new Discord.Client({
 })
 
 client.on('ready', async () => {
-  client.user.setActivity('Type /help');
+  client.user.setActivity('/help', {type: "WATCHING"});
   console.log("RobAnT is here !")
   command(client)
   cron(client)

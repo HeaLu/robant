@@ -84,9 +84,11 @@ module.exports = client => {
       const currentCa = ca.getHourColonyActions()
       const dayCa = ca.getDayColonyActions()
       const nextCa = ca.getHourColonyActions(addHours(today, 1))
+      const overnextCa = ca.getHourColonyActions(addHours(today, 2))
       nextCa.setTitle("Next hour colony actions")
+      nextCa.setTitle("In two hours colony actions")
       
-      client.channels.cache.get(config.channels.ca).send({embeds: [currentCa, nextCa, dayCa]})
+      client.channels.cache.get(config.channels.ca).send({embeds: [currentCa, nextCa, overnextCa, dayCa]})
     }, null, true, 'UTC')
   
     colonyactions.start()
