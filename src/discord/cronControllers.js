@@ -30,6 +30,7 @@ module.exports = client => {
       .setColor('#ff0000')
       .setTitle("Alliance expedition of " + friday)
       .setDescription(`<@&${config.roles.members}> please indicate all your availability for the event. You can put several`)
+      .setThumbnail('https://e7.pngegg.com/pngimages/44/527/png-clipart-tropical-tree-tree-tropical-tree.png')
       .setImage('https://scontent-cdt1-1.xx.fbcdn.net/v/t39.30808-6/242891060_262968579017194_8813702083471812699_n.jpg?_nc_cat=105&ccb=1-5&_nc_sid=973b4a&_nc_ohc=mWdLAMtf9L0AX-Xj1uD&_nc_ht=scontent-cdt1-1.xx&oh=00_AT9sUf-uA-UQ3Qno1kkJqQCnwUvGRg87_h9A2amRoTrONA&oe=62072416')
       .addFields(
         {name: "11h UTC", value: "1️⃣", inline: true},

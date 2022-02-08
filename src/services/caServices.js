@@ -213,8 +213,8 @@ const getHourColonyActions = (d = new Date()) => {
   const message = new MessageEmbed()
   .setColor(comp.svs.length > 0 ? '#00ff00' : '#ff0000')
   .setTitle("Colony actions - "+(d.getUTCHours() === 0 && comp.svs.length > 0 ? "0h30" : d.getUTCHours()+"h")+ " to "+(d.getUTCHours()+1 === 24 ? 0 : d.getUTCHours()+1)+"h UTC")
-  .setDescription(comp.svs.length > 0 ? `🟢 ${comp.svs.length} shared goal${comp.svs.length > 1 ? "s" : ""} with SvS 🟢\nDon't forget raspberry 👍🏼` : "🔴 no shared goal with SvS 🔴")
-	.setThumbnail(comp.svs.length > 0 ? 'https://upload.wikimedia.org/wikipedia/fr/thumb/3/3b/Raspberry_Pi_logo.svg/langfr-130px-Raspberry_Pi_logo.svg.png' : 'https://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/France_road_sign_AB4.svg/220px-France_road_sign_AB4.svg.png')
+  .setDescription(comp.svs.length > 0 ? `🟢 ${comp.svs.length} shared goal${comp.svs.length > 1 ? "s" : ""} with SvS` : "🔴 no shared goal with SvS")
+	.setThumbnail(comp.svs.length > 0 ? 'https://upload.wikimedia.org/wikipedia/fr/thumb/3/3b/Raspberry_Pi_logo.svg/langfr-130px-Raspberry_Pi_logo.svg.png' : 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/Forbidden_Symbol_Transparent.svg/400px-Forbidden_Symbol_Transparent.svg.png')
   if (comp.svs.length > 0 && comp.others.length > 0) {
     message.addFields(
       {name: `Matching SvS goals`, value: dispOk},
@@ -235,6 +235,7 @@ const getDayColonyActions = (d = new Date()) => {
   .setColor("BLUE")
   .setTitle("Today raspberry times")
   .setDescription("Here are colony actions sharing goals with SvS ")
+  .setThumbnail('https://students.wustl.edu/wp-content/uploads/2018/08/Schedule.png')
 
   for (const item of tab) {
     let dispObj = ""
