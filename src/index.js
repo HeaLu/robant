@@ -17,8 +17,13 @@ const client = new Discord.Client({
 })
 
 client.on('ready', async () => {
+  const expedition = await client.channels.cache.get(config.channels.expedition)
+  if (expedition.name !== "🌴-alliance-expedition") await client.channels.cache.get(config.channels.expedition).setName(`🌴-alliance-expedition`)
+
+  //await client.channels.cache.get(config.channels.expedition).setName(`🌴-alliance-expedition`)
   client.user.setActivity('/help', {type: "WATCHING"});
   console.log("RobAnT is here !")
+  
   command(client)
   cron(client)
   if (config.deepl) translate(client)

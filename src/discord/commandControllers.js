@@ -1,6 +1,20 @@
 const daily = require('../services/dailyServices')
+const { setAe } = require('../services/aeServices')
 const ca = require("../services/caServices")
-const { addDays, nextMonday, nextTuesday, nextWednesday, nextThursday, nextFriday, nextSaturday, isSunday, nextSunday } = require('date-fns')
+const { addDays, nextMonday, nextTuesday, nextWednesday, nextThursday, nextFriday, nextSaturday, isSunday, nextSunday, addMinutes, addSeconds } = require('date-fns')
+const config = require('../config')
+
+const next = {
+  "today": new Date(),
+  "tomorrow": addDays(new Date(), 1),
+  "sunday": nextSunday(new Date()),
+  "monday": nextMonday(new Date()),
+  "tuesday": nextTuesday(new Date()),
+  "wednesday": nextWednesday(new Date()),
+  "thursday": nextThursday(new Date()),
+  "friday": nextFriday(new Date()),
+  "saturday": nextSaturday(new Date())
+}
 
 const help = {
   color: 0xff0000,
@@ -13,11 +27,11 @@ const help = {
   fields: [
     {
       name: "📰 The Daily AnT",
-      value: "Type **/today, /tomorrow, /monday, /tuesday**, etc. to get The Daily AnT. Type **/daily** to get The Daily AnT without emojis"
+      value: "Type **/daily** to get The Daily AnT."
     },
     {
       name: "⏰ Colony actions",
-      value: "Type **/ca** to see current colony actions and all colony actions matching SvS goals"
+      value: "Type **/ca hour** to get hourly colony actions\nType **/ca allday** to get daily colony actions matching with SvS"
     },
     {
       name: "🌎 Translator",
@@ -25,7 +39,7 @@ const help = {
     },
     {
       name: "📆 Scheduled tasks",
-      value: "Colony actions each hour at xh05\nDaily AnT each day at 0h UTC\nNew alliance expedition poll each saturday at 0h UTC"
+      value: "Colony actions are updated each hour at xh05\nDaily AnT each day at 0h UTC\nNew alliance expedition poll each Saturday at 0h UTC, reminder for members Wednesday at 0h UTC and for officers at 20h UTC"
     },
     {
       name: "👋 Welcome",
@@ -41,48 +55,48 @@ const help = {
 module.exports = client => {
   client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
-  
-    const today = new Date()
     const { commandName } = interaction;
+    const { _subcommand, _hoistedOptions} = interaction.options
     switch (commandName) {
+      case "ca": 
+        if (_subcommand === "hour") {
+          const weekday = _hoistedOptions.find(el => el.name === "weekday")
+          const hour = _hoistedOptions.find(el => el.name === "hour")
+          const day = weekday !== undefined ? next[weekday.value] : new Date()
+          day.setUTCHours(hour.value)
+          interaction.reply({embeds: [ca.getHourColonyActions(day)], ephemeral: true})
+        }
+        if (_subcommand === "allday") {
+          const weekday = _hoistedOptions.find(el => el.name === "weekday")
+          const day = next[weekday.value]
+          interaction.reply({embeds: [ca.getDayColonyActions(day)], ephemeral: true})
+        }
+        break
       case "daily": 
-        interaction.reply({content: daily.getGameDaily(today), ephemeral: true})
+        const weekday = _hoistedOptions.find(el => el.name === "weekday")
+        const ingame = _hoistedOptions.find(el => el.name === "ingame")
+        const withoutEmojis = ingame !== undefined ? ingame.value : false
+        const day = next[weekday.value]
+        if (withoutEmojis) {
+          interaction.reply({content: daily.getGameDaily(day), ephemeral: true})
+        } else {
+          interaction.reply({embeds: [daily.getDiscordDaily(day)], ephemeral: true})
+        }
         break
-      case "today": 
-        interaction.reply({embeds: [daily.getDiscordDaily(today)], ephemeral: true})
-        break
-      case "tomorrow":
-        interaction.reply({embeds: [daily.getDiscordDaily(addDays(today, 1))], ephemeral: true})
-        break
-      case "monday":
-        interaction.reply({embeds: [daily.getDiscordDaily(nextMonday(today))], ephemeral: true})
-        break
-      case "tuesday":
-        interaction.reply({embeds: [daily.getDiscordDaily(nextTuesday(today))], ephemeral: true})
-        break
-      case "wednesday":
-        interaction.reply({embeds: [daily.getDiscordDaily(nextWednesday(today))], ephemeral: true})
-        break
-      case "thursday":
-        interaction.reply({embeds: [daily.getDiscordDaily(nextThursday(today))], ephemeral: true})
-        break
-      case "friday":
-        interaction.reply({embeds: [daily.getDiscordDaily(nextFriday(today))], ephemeral: true})
-        break
-      case "saturday":
-        interaction.reply({embeds: [daily.getDiscordDaily(nextSaturday(today))], ephemeral: true})
-        break
-      case "sunday":
-        interaction.reply({embeds: [daily.getDiscordDaily(isSunday(today) ? today : nextSunday(today))], ephemeral: true})
-        break
-      case "ca":
-        interaction.reply({embeds: [ca.getHourColonyActions(), ca.getDayColonyActions()], ephemeral: true})
+      case "ae":
+        const hour = _hoistedOptions.find(el => el.name === "hour")
+        if (interaction.member._roles.indexOf(config.roles.officers) === -1) {
+          interaction.reply({content: "Only R4 can do it, sorry...", ephemeral: true})
+          break
+        }
+        const friday = next["friday"]
+        friday.setUTCHours(parseInt(hour.value))
+        //const friday = addSeconds(new Date(), 15)
+        setAe(client, friday)
+        interaction.reply({content: "Lancé", ephemeral: true})
         break
       case "help":
         interaction.reply({embeds: [help], ephemeral: true})
-        break
-      case "test" :
-        interaction.reply({embeds: [daily.getDiscord2Daily(today)], ephemeral: true})
         break
       default:
         break

@@ -4,19 +4,87 @@ const { Routes } = require('discord-api-types/v9');
 const config = require('./config');
 
 const commands = [
-	new SlashCommandBuilder().setName('today').setDescription('Displays today Daily AnT'),
-	new SlashCommandBuilder().setName('daily').setDescription('Displays today Daily AnT without emojis'),
-	new SlashCommandBuilder().setName('tomorrow').setDescription('Displays tomorrow Daily AnT'),
-	new SlashCommandBuilder().setName('monday').setDescription('Displays Monday Daily AnT'),
-	new SlashCommandBuilder().setName('tuesday').setDescription('Displays Tuesday Daily AnT'),
-	new SlashCommandBuilder().setName('wednesday').setDescription('Displays Wednesday Daily AnT'),
-	new SlashCommandBuilder().setName('thursday').setDescription('Displays Thursday Daily AnT'),
-	new SlashCommandBuilder().setName('friday').setDescription('Displays Friday Daily AnT'),
-	new SlashCommandBuilder().setName('saturday').setDescription('Displays Saturday Daily AnT'),
-	new SlashCommandBuilder().setName('sunday').setDescription('Displays next Sunday Daily AnT (groundhogs or war event)'),
-	new SlashCommandBuilder().setName('ca').setDescription('Displays current Colony Actions'),
+	new SlashCommandBuilder()
+	.setName('daily')
+	.setDescription('Shows The Daily AnT')
+	.addStringOption(option => option
+		.setName("weekday")
+		.setDescription('The day you want to display The Daily AnT')
+		.setRequired(true)
+		.addChoice("today", "today")
+		.addChoice("tomorrow", "tomorrow")
+		.addChoice("monday", "monday")
+		.addChoice("tuesday", "tuesday")
+		.addChoice("wednesday", "wednesday")
+		.addChoice("thursday", "thursday")
+		.addChoice("friday", "friday")
+		.addChoice("saturday", "saturday")
+		.addChoice("sunday", "sunday")
+	)
+	.addBooleanOption(option => option
+		.setName("ingame")
+		.setDescription('if True will be displayed without emojis, ready to copy-paste ingame')
+		.setRequired(false)
+	),
+	new SlashCommandBuilder()
+		.setName('ca')
+		.setDescription('Display colony action')
+		.addSubcommand(subcommand => subcommand
+			.setName('allday')
+			.setDescription('Give the all day colony actions matching with SvS goals')
+			.addStringOption(option => option
+				.setName("weekday")
+				.setDescription('The day you want to display colony actions matching with SvS goals')
+				.setRequired(true)
+				.addChoice("today", "today")
+				.addChoice("tomorrow", "tomorrow")
+				.addChoice("monday", "monday")
+				.addChoice("tuesday", "tuesday")
+				.addChoice("wednesday", "wednesday")
+				.addChoice("thursday", "thursday")
+				.addChoice("friday", "friday")
+				.addChoice("saturday", "saturday")
+				.addChoice("sunday", "sunday")
+			)
+		)
+		.addSubcommand(subcommand => subcommand
+			.setName('hour')
+			.setDescription('Choose a day and hour to get its colony actions')
+			.addIntegerOption(option => option
+				.setName('hour')
+				.setDescription('The UTC hour you want to display colony actions')
+				.setRequired(true)
+				.setMinValue(0)
+				.setMaxValue(23)
+			)
+			.addStringOption(option => option
+				.setName("weekday")
+				.setDescription('The day you want to display colony actions. If omitted, today will be used')
+				.setRequired(false)
+				.addChoice("today", "today")
+				.addChoice("tomorrow", "tomorrow")
+				.addChoice("monday", "monday")
+				.addChoice("tuesday", "tuesday")
+				.addChoice("wednesday", "wednesday")
+				.addChoice("thursday", "thursday")
+				.addChoice("friday", "friday")
+				.addChoice("saturday", "saturday")
+				.addChoice("sunday", "sunday")
+			)
+		),
 	new SlashCommandBuilder().setName('help').setDescription('Show all commands and functionnalities of RobAnT'),
-	new SlashCommandBuilder().setName('test').setDescription('Nothing here most of time, just to test works in progress'),
+	new SlashCommandBuilder()
+		.setName('ae')
+		.setDescription('Configures this week Alliance Expedition Time')
+		.addStringOption(option => option
+			.setName('hour')
+			.setDescription('Set UTC hour')
+			.setRequired(true)
+			.addChoice('11h UTC', "11")
+			.addChoice('12h UTC', "12")
+			.addChoice('20h UTC', "13")
+			.addChoice('23h UTC', "14")
+		)
 ]
 	.map(command => command.toJSON());
 

@@ -56,7 +56,7 @@ module.exports = client => {
       .setTitle("Reminder")
       .setDescription(`<@&${config.roles.members}> please don't forget to give your availabilities !`)
       client.channels.cache.get(config.channels.expedition).send({embeds: [message]})
-    })
+    }, null, true, 'UTC')
 
     remind.start()
 
@@ -66,11 +66,10 @@ module.exports = client => {
       .setTitle("Checking")
       .setDescription(`<@&${config.roles.officers}> please check the correct registration for the event`)
       client.channels.cache.get(config.channels.expedition).send({embeds: [message]})
-    })
+    }, null, true, 'UTC')
 
     checking.start()
-  }
-  
+  }  
   
   if (config.channels.ca) {
     const colonyactions = new CronJob('00 05 * * * *', async function () {

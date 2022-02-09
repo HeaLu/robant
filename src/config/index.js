@@ -30,7 +30,8 @@ const config = {
   roles: {
     members: process.env.ROLE_MEMBERS,
     guests: process.env.ROLE_GUESTS,
-    admins: process.env.ROLE_ADMINS
+    admins: process.env.ROLE_ADMINS,
+    officers: process.env.ROLE_OFFICERS
   }
 }
 
