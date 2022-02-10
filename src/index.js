@@ -17,7 +17,7 @@ const client = new Discord.Client({
 })
 
 client.on('ready', async () => {
-  const expedition = await client.channels.cache.get(config.channels.expedition)
+  const expedition = client.channels.cache.get(config.channels.expedition)
   if (expedition.name !== "🌴-alliance-expedition") await client.channels.cache.get(config.channels.expedition).setName(`🌴-alliance-expedition`)
 
   //await client.channels.cache.get(config.channels.expedition).setName(`🌴-alliance-expedition`)

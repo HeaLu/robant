@@ -1,5 +1,5 @@
 const daily = require('../services/dailyServices')
-const { setAe } = require('../services/aeServices')
+const Ae = require('../services/aeServices')
 const ca = require("../services/caServices")
 const { addDays, nextMonday, nextTuesday, nextWednesday, nextThursday, nextFriday, nextSaturday, isSunday, nextSunday, addMinutes, addSeconds } = require('date-fns')
 const config = require('../config')
@@ -39,7 +39,7 @@ const help = {
     },
     {
       name: "📆 Scheduled tasks",
-      value: "Colony actions are updated each hour at xh05\nDaily AnT each day at 0h UTC\nNew alliance expedition poll each Saturday at 0h UTC, reminder for members Wednesday at 0h UTC and for officers at 20h UTC"
+      value: "Colony actions are updated each hour at xh05\nDaily AnT each day at 0h UTC\nNew alliance expedition poll each Saturday at 0h UTC, reminder for members Wednesday at 0h UTC and for officers at 21h UTC"
     },
     {
       name: "👋 Welcome",
@@ -53,6 +53,7 @@ const help = {
 }
 
 module.exports = client => {
+  const AeInstance = new Ae(client)
   client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
     const { commandName } = interaction;
@@ -84,17 +85,40 @@ module.exports = client => {
         }
         break
       case "ae":
-        const hour = _hoistedOptions.find(el => el.name === "hour")
         if (interaction.member._roles.indexOf(config.roles.officers) === -1) {
           interaction.reply({content: "Only R4 can do it, sorry...", ephemeral: true})
           break
         }
-        const friday = next["friday"]
-        friday.setUTCHours(parseInt(hour.value))
-        //const friday = addSeconds(new Date(), 15)
-        setAe(client, friday)
-        interaction.reply({content: "Lancé", ephemeral: true})
-        break
+        const hour = _hoistedOptions.find(el => el.name === "hour")
+        if (_subcommand === "start") {
+          const friday = next["friday"]
+          friday.setUTCHours(parseInt(hour.value))
+          const result = AeInstance.start(friday)
+          if (result) {
+            interaction.reply({content: "AE countdown **started**. Don't worry if it seems it doesn't work, the refresh time is each 5 minutes (according to Discord rules)", ephemeral: true})
+          } else {
+            interaction.reply({content: "Error while starting AE", ephemeral: true})
+          }
+          break
+        }
+        if (_subcommand === "stop") {
+          const result = await AeInstance.stop()
+          if (result) {
+            interaction.reply({content: "AE countdown **stoped**", ephemeral: true})
+          } else {
+            interaction.reply({content: "Error while stoping AE", ephemeral: true})
+          }
+          break
+        }
+        if (_subcommand === "restart") {
+          const result = await AeInstance.restart(friday)
+          if (result) {
+            interaction.reply({content: "AE countdown **restarted**. Don't worry if it seems it doesn't work, the refresh time is each 5 minutes (according to Discord rules)", ephemeral: true})
+          } else {
+            interaction.reply({content: "Error while restarting AE", ephemeral: true})
+          }
+          break
+        }
       case "help":
         interaction.reply({embeds: [help], ephemeral: true})
         break

@@ -76,14 +76,35 @@ const commands = [
 	new SlashCommandBuilder()
 		.setName('ae')
 		.setDescription('Configures this week Alliance Expedition Time')
-		.addStringOption(option => option
-			.setName('hour')
-			.setDescription('Set UTC hour')
-			.setRequired(true)
-			.addChoice('11h UTC', "11")
-			.addChoice('12h UTC', "12")
-			.addChoice('20h UTC', "13")
-			.addChoice('23h UTC', "14")
+		.addSubcommand(subcommand => subcommand
+			.setName('start')
+			.setDescription('Start the countdown to Alliance Expedition')	
+			.addStringOption(option => option
+				.setName('hour')
+				.setDescription('Set UTC hour')
+				.setRequired(true)
+				.addChoice('11h UTC', "11")
+				.addChoice('12h UTC', "12")
+				.addChoice('20h UTC', "13")
+				.addChoice('23h UTC', "14")		
+			)
+		)
+		.addSubcommand(subcommand => subcommand
+			.setName("stop")
+			.setDescription('Stop the countdown to Alliance Expedition')
+		)
+		.addSubcommand(subcommand => subcommand
+			.setName("restart")
+			.setDescription('Restart the countdown to Alliance Expedition with a new delay')	
+			.addStringOption(option => option
+				.setName('hour')
+				.setDescription('Set UTC hour')
+				.setRequired(true)
+				.addChoice('11h UTC', "11")
+				.addChoice('12h UTC', "12")
+				.addChoice('20h UTC', "13")
+				.addChoice('23h UTC', "14")		
+			)
 		)
 ]
 	.map(command => command.toJSON());
