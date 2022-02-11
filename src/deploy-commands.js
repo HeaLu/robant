@@ -2,25 +2,21 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const config = require('./config');
+const { days, goals, next } = require('./tools/constants');
 
 const commands = [
 	new SlashCommandBuilder()
 	.setName('daily')
 	.setDescription('Shows The Daily AnT')
-	.addStringOption(option => option
-		.setName("weekday")
-		.setDescription('The day you want to display The Daily AnT')
-		.setRequired(true)
-		.addChoice("today", "today")
-		.addChoice("tomorrow", "tomorrow")
-		.addChoice("monday", "monday")
-		.addChoice("tuesday", "tuesday")
-		.addChoice("wednesday", "wednesday")
-		.addChoice("thursday", "thursday")
-		.addChoice("friday", "friday")
-		.addChoice("saturday", "saturday")
-		.addChoice("sunday", "sunday")
-	)
+	.addStringOption(option => { option
+		option.setName("weekday")
+		option.setDescription('The day you want to display The Daily AnT')
+		option.setRequired(true)
+		for (const day of Object.keys(next)) {
+			option.addChoice(day, day)
+		}
+		return option
+	})
 	.addBooleanOption(option => option
 		.setName("ingame")
 		.setDescription('if True will be displayed without emojis, ready to copy-paste ingame')
@@ -30,22 +26,52 @@ const commands = [
 		.setName('ca')
 		.setDescription('Display colony action')
 		.addSubcommand(subcommand => subcommand
-			.setName('allday')
+			.setName('svs')
 			.setDescription('Give the all day colony actions matching with SvS goals')
-			.addStringOption(option => option
+			.addStringOption(option => { option
 				.setName("weekday")
 				.setDescription('The day you want to display colony actions matching with SvS goals')
 				.setRequired(true)
-				.addChoice("today", "today")
-				.addChoice("tomorrow", "tomorrow")
-				.addChoice("monday", "monday")
-				.addChoice("tuesday", "tuesday")
-				.addChoice("wednesday", "wednesday")
-				.addChoice("thursday", "thursday")
-				.addChoice("friday", "friday")
-				.addChoice("saturday", "saturday")
-				.addChoice("sunday", "sunday")
-			)
+				for (const day of Object.keys(next)) {
+					option.addChoice(day, day)
+				}
+				return option
+			})
+		)
+		.addSubcommand(subcommand => subcommand
+			.setName('allday')
+			.setDescription('Give the all day colony actions')
+			.addStringOption(option => { option
+				.setName("weekday")
+				.setDescription('The day you want to display colony actions')
+				.setRequired(true)
+				for (const day of Object.keys(next)) {
+					option.addChoice(day, day)
+				}
+				return option
+			})
+		)
+		.addSubcommand(subcommand => subcommand
+			.setName('search')
+			.setDescription('Search for a matching goal in all colony actions of a day')
+			.addStringOption(option => { option
+				.setName("weekday")
+				.setDescription('The day you want to search matching colony actions matching in')
+				.setRequired(true)
+				for (const day of Object.keys(next)) {
+					option.addChoice(day, day)
+				}
+				return option
+			})
+			.addStringOption(option => { option
+				.setName("goal")
+				.setDescription('The goal you purchase')
+				.setRequired(true)
+				for (const [key, value] of Object.entries(goals)) {
+					option.addChoice(value.pic+" - "+value.label, key)
+				}
+				return option
+			})
 		)
 		.addSubcommand(subcommand => subcommand
 			.setName('hour')
@@ -57,20 +83,15 @@ const commands = [
 				.setMinValue(0)
 				.setMaxValue(23)
 			)
-			.addStringOption(option => option
+			.addStringOption(option => { option
 				.setName("weekday")
 				.setDescription('The day you want to display colony actions. If omitted, today will be used')
 				.setRequired(false)
-				.addChoice("today", "today")
-				.addChoice("tomorrow", "tomorrow")
-				.addChoice("monday", "monday")
-				.addChoice("tuesday", "tuesday")
-				.addChoice("wednesday", "wednesday")
-				.addChoice("thursday", "thursday")
-				.addChoice("friday", "friday")
-				.addChoice("saturday", "saturday")
-				.addChoice("sunday", "sunday")
-			)
+				for (const day of Object.keys(next)) {
+					option.addChoice(day, day)
+				}
+				return option
+			})
 		),
 	new SlashCommandBuilder().setName('help').setDescription('Show all commands and functionnalities of RobAnT'),
 	new SlashCommandBuilder()

@@ -16,9 +16,9 @@ const client = new Discord.Client({
 	partials: ['MESSAGE', 'CHANNEL', 'REACTION']
 })
 
-client.on('ready', async () => {
+client.on('ready', () => {
   const expedition = client.channels.cache.get(config.channels.expedition)
-  if (expedition.name !== "🌴-alliance-expedition") await client.channels.cache.get(config.channels.expedition).setName(`🌴-alliance-expedition`)
+  if (expedition.name !== "🌴-alliance-expedition") client.channels.cache.get(config.channels.expedition).setName(`🌴-alliance-expedition`)
 
   //await client.channels.cache.get(config.channels.expedition).setName(`🌴-alliance-expedition`)
   client.user.setActivity('/help', {type: "WATCHING"});

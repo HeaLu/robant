@@ -1,20 +1,8 @@
 const daily = require('../services/dailyServices')
 const Ae = require('../services/aeServices')
 const ca = require("../services/caServices")
-const { addDays, nextMonday, nextTuesday, nextWednesday, nextThursday, nextFriday, nextSaturday, isSunday, nextSunday, addMinutes, addSeconds } = require('date-fns')
 const config = require('../config')
-
-const next = {
-  "today": new Date(),
-  "tomorrow": addDays(new Date(), 1),
-  "sunday": nextSunday(new Date()),
-  "monday": nextMonday(new Date()),
-  "tuesday": nextTuesday(new Date()),
-  "wednesday": nextWednesday(new Date()),
-  "thursday": nextThursday(new Date()),
-  "friday": nextFriday(new Date()),
-  "saturday": nextSaturday(new Date())
-}
+const { next } = require('../tools/constants')
 
 const help = {
   color: 0xff0000,
@@ -67,10 +55,21 @@ module.exports = client => {
           day.setUTCHours(hour.value)
           interaction.reply({embeds: [ca.getHourColonyActions(day)], ephemeral: true})
         }
-        if (_subcommand === "allday") {
+        if (_subcommand === "svs") {
           const weekday = _hoistedOptions.find(el => el.name === "weekday")
           const day = next[weekday.value]
           interaction.reply({embeds: [ca.getDayColonyActions(day)], ephemeral: true})
+        }
+        if (_subcommand === "allday") {
+          const weekday = _hoistedOptions.find(el => el.name === "weekday")
+          const day = next[weekday.value]
+          interaction.reply({embeds: [ca.getAlldayColonyAction(day)], ephemeral: true})
+        }
+        if (_subcommand === "search") {
+          const weekday = _hoistedOptions.find(el => el.name === "weekday")
+          const goal = _hoistedOptions.find(el => el.name === "goal")
+          const day = next[weekday.value]
+          interaction.reply({embeds: [ca.searchCa(day, goal.value)], ephemeral: true})
         }
         break
       case "daily": 

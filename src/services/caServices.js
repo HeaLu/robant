@@ -1,145 +1,5 @@
 const { MessageEmbed } = require('discord.js')
-
-const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
-
-const goals = {
-  0: {
-    label: "Use any speedup",
-    pic: "🕖"
-  },
-  1: {
-    label: "Get building power",
-    pic: "🏗️"
-  },
-  2: {
-    label: "Use building speedup",
-    pic: "🕖🏗️"
-  },
-  3: {
-    label: "Get evolution power",
-    pic: "🔬"
-  },
-  4: {
-    label: "Use evolution speedup",
-    pic: "🕖🔬"
-  },
-  5: {
-    label: "Soldier hatching",
-    pic: "🪖"
-  },
-  6: {
-    label: "Use hatching speedup",
-    pic: "🕖🪖"
-  },
-  7: {
-    label: "Hatch, feed or star up insects",
-    pic: "🦗"
-  },
-  8: {
-    label: "Special ants",
-    pic: "🐜"
-  },
-  9: {
-    label: "Cells",
-    pic: "🧬"
-  },
-  10: {
-    label: "Genes",
-    pic: "🧬"
-  },
-  11: {
-    label: "Germs",
-    pic: "🧬"
-  },
-  12: {
-    label: "Fungus",
-    pic: "🧬"
-  }  ,
-  13: {
-    label: "Creature remain",
-    pic: "🦴"
-  }
-}
-
-const colonyactions = {
-  0: {
-    svs: [7],
-    0: [1, 2],
-    1: [0, 7],
-    2: [2, 4, 6],
-    3: [3, 4, 7],
-    4: [0],
-    5: [6, 7],
-    6: [1, 3, 6],
-    7: [0, 7]
-  },
-  1: {
-    svs: [0, 1, 2],
-    0: [1],
-    1: [3, 4],
-    2: [1],
-    3: [0],
-    4: [1, 3],
-    5: [1, 2],
-    6: [1, 3, 5],
-    7: [1, 3, 5]
-  },
-  2: {
-    svs: [9],
-    0: [1, 2],
-    1: [1, 9],
-    2: [6],
-    3: [1, 9],
-    4: [2, 4, 6],
-    5: [1, 3, 6, 9],
-    6: [2, 3, 5],
-    7: [1, 9]
-  },
-  3: {
-    svs: [0, 3, 4, 13],
-    0: [1, 2],
-    1: [3, 4, 13],
-    2: [6],
-    3: [1, 3, 13],
-    4: [1, 5],
-    5: [2, 4, 6, 13],
-    6: [1, 3, 6],
-    7: [2, 4, 6, 13]
-  },
-  4: {
-    svs: [8],
-    0: [1, 2],
-    1: [8],
-    2: [2, 4, 6],
-    3: [8],
-    4: [0],
-    5: [8],
-    6: [1, 3, 5],
-    7: [8]
-  },
-  5: {
-    svs: [0, 5, 6, 10],
-    0: [0],
-    1: [2, 4, 6, 10],
-    2: [1, 3, 6],
-    3: [6, 10],
-    4: [1, 3, 6],
-    5: [1, 5, 10],
-    6: [3, 5],
-    7: [0, 10]
-  },
-  6: {
-    svs: [11],
-    0: [0],
-    1: [3, 4, 11],
-    2: [1, 2],
-    3: [6, 11],
-    4: [1, 3, 6],
-    5: [1, 3, 6, 11],
-    6: [1, 5],
-    7: [3, 5, 11]
-  }
-}
+const { days, goals, colonyactions } = require('../tools/constants')
 
 const getHourComparative = (d = new Date()) => {
   const day = d.getUTCDay()
@@ -201,7 +61,7 @@ const getSortedDayComparative = (d = new Date()) => {
 const getHourColonyActions = (d = new Date()) => {
 
   const comp = getHourComparative(d)
-  const day = days[d.getDay()]
+  const day = days[d.getUTCDay()]
   let dispOk = ""
   let dispPasok = ""
 
@@ -232,9 +92,66 @@ const getHourColonyActions = (d = new Date()) => {
   return message
 }
 
+const getAlldayColonyAction = (d = new Date()) => {
+  const daygoals = colonyactions[d.getUTCDay()]
+  const day = days[d.getUTCDay()]
+  const message = new MessageEmbed()  
+  .setColor("BLUE")  
+  .setTitle(`${day} colony actions`)
+  .setThumbnail('https://students.wustl.edu/wp-content/uploads/2018/08/Schedule.png')
+  for (let i = 0; i < 8; i++) {
+    let content = ""
+    for (const j in daygoals[i]) {
+      content += goals[daygoals[i][j]].pic+" - "+goals[daygoals[i][j]].label
+      if (j*1+1 < daygoals[i].length) content += '\n'
+    }
+    const name = `${i}h, ${i*1+8}h and ${i*1+16}h UTC`
+    message.addField(name, content)
+  }
+
+  return message
+}
+
+const searchCa = (d = new Date(), goal) => {
+  const daygoals = colonyactions[d.getUTCDay()]
+  goal = parseInt(goal)
+  let matching = []
+  for (let i = 1; i < 8; i++) {
+    for (const j of daygoals[i]) {
+      if (daygoals[i][j] === goal) matching.push(i, i+8, i+16)
+    }
+  }
+
+  content = ""
+
+  if (matching.length > 0) {
+    matching = matching.sort((a,b)=>a-b)
+    for (const i in matching) {
+      content += matching[i]+"h"
+      if (i*1+1 < matching.length) {
+        content += ", "
+      }
+      if (i*2+1 === matching.length) {
+        content += " and "
+      }
+    }
+    content += " UTC"
+  } else {
+    content = "No result for that..."
+  }
+
+  const message = new MessageEmbed()
+
+  .setColor("BLUE")
+  .setTitle(goals[goal].pic+" - "+goals[goal].label)
+  .setDescription(content)
+  .setThumbnail("https://toppng.com/uploads/preview/cmb-magnfying-glass-30mm-png-for-search-bar-carms-means-biz-11563234239hwgksjjvol.png")
+  return message
+}
+
 const getDayColonyActions = (d = new Date()) => {
   const tab = getSortedDayComparative(d)
-  const day = days[d.getDay()]
+  const day = days[d.getUTCDay()]
   const message = new MessageEmbed()
   .setColor("BLUE")
   .setTitle(`${day} raspberry times`)
@@ -270,9 +187,11 @@ const getSvs = (d = new Date()) => {
   return colonyactions[day].svs
 }
 
+exports.searchCa = searchCa
 exports.getSortedDayComparative = getSortedDayComparative
 exports.getHourComparative = getHourComparative
 exports.getDayColonyActions = getDayColonyActions
 exports.getGoals = getGoals
 exports.getSvs = getSvs
 exports.getHourColonyActions = getHourColonyActions
+exports.getAlldayColonyAction = getAlldayColonyAction
