@@ -15,11 +15,11 @@ const help = {
   fields: [
     {
       name: "📰 The Daily AnT",
-      value: "Type **/daily** to get The Daily AnT."
+      value: "**/daily** to get The Daily AnT."
     },
     {
       name: "⏰ Colony actions",
-      value: "Type **/ca hour** to get hourly colony actions\nType **/ca allday** to get daily colony actions matching with SvS"
+      value: "**/ca hour** to get hourly colony actions\n**/ca svs** to get daily colony actions matching with SvS\n**/ca allday** to get all colony action of a given day\n**/ca search** to find all hours in a day matching with given goal"
     },
     {
       name: "🌎 Translator",
