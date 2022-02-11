@@ -3,6 +3,7 @@ const Ae = require('../services/aeServices')
 const ca = require("../services/caServices")
 const config = require('../config')
 const { next } = require('../tools/constants')
+const { isFriday } = require('date-fns')
 
 const help = {
   color: 0xff0000,
@@ -90,7 +91,7 @@ module.exports = client => {
         }
         const hour = _hoistedOptions.find(el => el.name === "hour")
         if (_subcommand === "start") {
-          const friday = next["friday"]
+          const friday = isFriday(new Date()) ? new Date() : next["friday"]
           friday.setUTCHours(parseInt(hour.value))
           const result = AeInstance.start(friday)
           if (result) {
