@@ -2,7 +2,13 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const config = require('./config');
-const { days, goals, next } = require('./tools/constants');
+const { goals, next } = require('./tools/constants');
+
+const formatDaysProposals = (option) => {
+	for (const day of Object.keys(next)) {
+		option.addChoice(day[0].toUpperCase() + day.substring(1), day)
+	}
+}
 
 const commands = [
 	new SlashCommandBuilder()
@@ -12,9 +18,7 @@ const commands = [
 		option.setName("weekday")
 		option.setDescription('The day you want to display The Daily AnT')
 		option.setRequired(true)
-		for (const day of Object.keys(next)) {
-			option.addChoice(day, day)
-		}
+		formatDaysProposals(option)
 		return option
 	})
 	.addBooleanOption(option => option
@@ -31,10 +35,8 @@ const commands = [
 			.addStringOption(option => { option
 				.setName("weekday")
 				.setDescription('The day you want to display colony actions matching with SvS goals')
-				.setRequired(true)
-				for (const day of Object.keys(next)) {
-					option.addChoice(day, day)
-				}
+				.setRequired(true)				
+				formatDaysProposals(option)
 				return option
 			})
 		)
@@ -44,10 +46,8 @@ const commands = [
 			.addStringOption(option => { option
 				.setName("weekday")
 				.setDescription('The day you want to display colony actions')
-				.setRequired(true)
-				for (const day of Object.keys(next)) {
-					option.addChoice(day, day)
-				}
+				.setRequired(true)				
+				formatDaysProposals(option)
 				return option
 			})
 		)
@@ -58,9 +58,7 @@ const commands = [
 				.setName("weekday")
 				.setDescription('The day you want to search matching colony actions matching in')
 				.setRequired(true)
-				for (const day of Object.keys(next)) {
-					option.addChoice(day, day)
-				}
+				formatDaysProposals(option)
 				return option
 			})
 			.addStringOption(option => { option
@@ -87,9 +85,7 @@ const commands = [
 				.setName("weekday")
 				.setDescription('The day you want to display colony actions. If omitted, today will be used')
 				.setRequired(false)
-				for (const day of Object.keys(next)) {
-					option.addChoice(day, day)
-				}
+				formatDaysProposals(option)
 				return option
 			})
 		),

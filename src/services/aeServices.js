@@ -1,5 +1,5 @@
 const {CronJob, CronTime} = require('cron')
-const { formatDistance, startOfDay, subHours, startOfHour } = require('date-fns')
+const { formatDistance, startOfDay, subHours, startOfHour, addSeconds } = require('date-fns')
 const config = require('../config')
 const { MessageEmbed } = require('discord.js')
 
@@ -12,16 +12,18 @@ module.exports = class Ae {
       const message = new MessageEmbed()
       .setColor('#ff0000')
       .setTitle("Reminder")
-      .setDescription(`<@&${config.roles.members}> don't forget Alliance Expedition today at ${this._date.getUTCHour()}h UTC`)
-      client.channels.cache.get(config.channels.expedition).send({embeds: [message]})
-    }, null, false, 'UTC', this)
+      .setThumbnail("https://www.clipartmax.com/png/full/18-185824_bell-icon-bell-icon.png")
+      .setDescription(`<@&${config.roles.members}> don't forget Alliance Expedition today at ${this._date.getUTCHours()}h UTC`)
+      this._client.channels.cache.get(config.channels.expedition).send({embeds: [message]})
+    }, null, false, 'Europe/Paris', this)
     this._remind2 = new CronJob(subHours(this._date, -1), async function () {
       const message = new MessageEmbed()
       .setColor('#ff0000')
       .setTitle("Reminder")
+      .setThumbnail("https://www.clipartmax.com/png/full/18-185824_bell-icon-bell-icon.png")
       .setDescription(`<@&${config.roles.members}> Alliance Expedition in 1 hour, prepare yourself for battle !`)
-      client.channels.cache.get(config.channels.expedition).send({embeds: [message]})
-    }, null, false, 'UTC', this)
+      this.client.channels.cache.get(config.channels.expedition).send({embeds: [message]})
+    }, null, false, 'Europe/Paris', this)
   }
 
   get running() {
@@ -64,14 +66,15 @@ module.exports = class Ae {
   }
 
   async stop() {
-    if (this.running) {
+    if (this._remind1.running)  this._remind1.stop()
+    if (this._remind2.running) this._remind2.stop()
+    const channel = this._client.channels.cache.get(config.channels.expedition)
+    if (channel.name !== "🌴-alliance-expedition") channel.setName("🌴-alliance-expedition")
+    if (this._job.running) {
       this._job.stop()
-      this._remind1.stop()
-      this._remind2.stop()
-      this._client.channels.cache.get(config.channels.expedition).setName("🌴-alliance-expedition")
-      return true
+      return "AE countdown **stoped**"
     } else {
-      return false
+      return "Error, AE countdown wasn't running"
     }
   }  
 

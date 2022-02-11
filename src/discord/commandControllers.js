@@ -102,12 +102,8 @@ module.exports = client => {
           break
         }
         if (_subcommand === "stop") {
-          const result = await AeInstance.stop()
-          if (result) {
-            interaction.reply({content: "AE countdown **stoped**", ephemeral: true})
-          } else {
-            interaction.reply({content: "Error while stoping AE", ephemeral: true})
-          }
+          const content = await AeInstance.stop()
+          interaction.reply({content, ephemeral: true})
           break
         }
         if (_subcommand === "restart") {

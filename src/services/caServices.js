@@ -145,7 +145,7 @@ const searchCa = (d = new Date(), goal) => {
   .setColor("BLUE")
   .setTitle(goals[goal].pic+" - "+goals[goal].label)
   .setDescription(content)
-  .setThumbnail("https://toppng.com/uploads/preview/cmb-magnfying-glass-30mm-png-for-search-bar-carms-means-biz-11563234239hwgksjjvol.png")
+  .setThumbnail("https://www.pinclipart.com/picdir/big/142-1425732_marine-clipart.png")
   return message
 }
 

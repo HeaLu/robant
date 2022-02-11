@@ -16,6 +16,7 @@ module.exports = client => {
     const message = new MessageEmbed()
     .setColor('#ff0000')
     .setTitle("Welcome in AnT Family Discord")
+    .setThumbnail("https://www.clipartmax.com/png/full/4-48267_ant-cartoon-ant-carrying-food.png")
     .setDescription(`Hello <@!${member.id}>, sit down and let's get acquainted !`)
     .addFields({
       name: "And now...",
