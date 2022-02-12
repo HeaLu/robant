@@ -117,9 +117,7 @@ const searchCa = (d = new Date(), goal) => {
   goal = parseInt(goal)
   let matching = []
   for (let i = 1; i < 8; i++) {
-    for (const j of daygoals[i]) {
-      if (daygoals[i][j] === goal) matching.push(i, i+8, i+16)
-    }
+    if (daygoals[i].indexOf(goal) !== -1) matching.push(i, i+8, i+16)
   }
 
   content = ""
@@ -128,10 +126,10 @@ const searchCa = (d = new Date(), goal) => {
     matching = matching.sort((a,b)=>a-b)
     for (const i in matching) {
       content += matching[i]+"h"
-      if (i*1+1 < matching.length) {
+      if (i*1+2 < matching.length) {
         content += ", "
       }
-      if (i*2+1 === matching.length) {
+      if (i*1+2 === matching.length) {
         content += " and "
       }
     }
