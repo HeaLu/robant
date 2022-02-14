@@ -86,6 +86,7 @@ module.exports = client => {
       const dayCa = ca.getDayColonyActions()
       const nextCa = ca.getHourColonyActions(addHours(today, 1))
       const overnextCa = ca.getHourColonyActions(addHours(today, 2))
+      currentCa.setTitle("Current colony actions")
       nextCa.setTitle("Next hour colony actions")
       overnextCa.setTitle("In two hours colony actions")
       

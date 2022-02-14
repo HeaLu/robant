@@ -113,7 +113,6 @@ const getAlldayColonyAction = (d = new Date()) => {
 }
 
 const searchCa = (d = new Date(), goal) => {
-  console.log(d);
   const daygoals = colonyactions[d.getUTCDay()]
   goal = parseInt(goal)
   let matching = []
