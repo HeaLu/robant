@@ -68,7 +68,7 @@ function getDailyContent (d = new Date()) {
 
 const getDiscordDaily = (d = new Date()) => {
   const message = new MessageEmbed()
-  message.setColor('#ff0000')
+  message.setColor('BLUE')
   const c = getDailyContent(d)
   if (c.day) message.setTitle("📰 __The Daily AnT__ - " + c.day + "\n")
   if (c.tasks) message.addField("🏆 Today SvS", c.tasks + "\n")

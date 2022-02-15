@@ -71,24 +71,32 @@ const commands = [
 				return option
 			})
 		)
-		.addSubcommand(subcommand => subcommand
+		/*.addSubcommand(subcommand => subcommand
 			.setName('hour')
 			.setDescription('Choose a day and hour to get its colony actions')
+			.addStringOption(option => { option
+				.setName("weekday")
+				.setDescription('The day you want to display colony actions. If omitted, today will be used')
+				.setRequired(true)
+				formatDaysProposals(option)
+				return option
+			})
 			.addIntegerOption(option => option
-				.setName('hour')
-				.setDescription('The UTC hour you want to display colony actions')
+				.setName('hours')
+				.setDescription('The hour you want to display colony actions')
 				.setRequired(true)
 				.setMinValue(0)
 				.setMaxValue(23)
 			)
-			.addStringOption(option => { option
-				.setName("weekday")
-				.setDescription('The day you want to display colony actions. If omitted, today will be used')
-				.setRequired(false)
-				formatDaysProposals(option)
-				return option
-			})
-		),
+		)*/,
+	new SlashCommandBuilder()
+	.setName('timezone')
+	.setDescription('Show or set your current timezone')
+	.addStringOption(option =>option
+		.setName("set")
+		.setDescription('Set your timezone to make commands giving answers in your own time (example: "Europe/Paris")')
+		.setRequired(false)
+	),
 	new SlashCommandBuilder().setName('help').setDescription('Show all commands and functionnalities of RobAnT'),
 	new SlashCommandBuilder()
 		.setName('ae')

@@ -1,5 +1,15 @@
+const { addHours, getHours } = require('date-fns')
+const { utcToZonedTime, getTimezoneOffset } = require('date-fns-tz')
 const { MessageEmbed } = require('discord.js')
 const { days, goals, colonyactions } = require('../tools/constants')
+
+const getZonedHours = (timezone, hours) => {
+  const offset = getTimezoneOffset(timezone) / 60 / 60 / 1000
+  const newHours = hours*1+offset
+  if (newHours>23) return newHours-24
+  if (newHours<0) return newHours+24
+  return newHours
+}
 
 const getHourComparative = (d = new Date()) => {
   const day = d.getUTCDay()
@@ -58,10 +68,10 @@ const getSortedDayComparative = (d = new Date()) => {
   return newtab
 }
 
-const getHourColonyActions = (d = new Date()) => {
-
+/* const getHourColonyActions = (d = new Date(), timezone = 'UTC') => {
+  const zoned = utcToZonedTime(d, timezone)
   const comp = getHourComparative(d)
-  const day = days[d.getUTCDay()]
+  const day = days[zoned.getUTCDay()]
   let dispOk = ""
   let dispPasok = ""
 
@@ -75,7 +85,7 @@ const getHourColonyActions = (d = new Date()) => {
 
   const message = new MessageEmbed()
   .setColor(comp.svs.length > 0 ? 'GREEN' : 'RED')
-  .setTitle(day+" colony actions - "+(d.getUTCHours() === 0 && comp.svs.length > 0 ? "0h30" : d.getUTCHours()+"h")+ " to "+(d.getUTCHours()+1 === 24 ? 0 : d.getUTCHours()+1)+"h UTC")
+  .setTitle(day+" colony actions - "+zoned.getHours()+"h"+ " to "+getHours(addHours(zoned, 1))+"h")
   .setDescription(comp.svs.length > 0 ? `🟢 ${comp.svs.length} shared goal${comp.svs.length > 1 ? "s" : ""} with SvS` : "🔴 no shared goal with SvS")
 	.setThumbnail(comp.svs.length > 0 ? 'https://upload.wikimedia.org/wikipedia/fr/thumb/3/3b/Raspberry_Pi_logo.svg/langfr-130px-Raspberry_Pi_logo.svg.png' : 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/Forbidden_Symbol_Transparent.svg/400px-Forbidden_Symbol_Transparent.svg.png')
   if (comp.svs.length > 0 && comp.others.length > 0) {
@@ -88,11 +98,46 @@ const getHourColonyActions = (d = new Date()) => {
   } else if (comp.others.length > 0) {
     message.addField(`Goal${comp.others.length > 1 ? "s" : ""}`, dispPasok)
   }
+  message.setFooter({text: 'Timezone set to UTC'})
+
+  return message
+} */
+const getHourColonyActions = (d = new Date(), timezone = 'UTC') => {
+  const zoned = utcToZonedTime(d, timezone)
+  const comp = getHourComparative(d)
+  const day = days[zoned.getUTCDay()]
+  let dispOk = ""
+  let dispPasok = ""
+
+  for (const i of comp.svs) {
+    dispOk = dispOk + goals[i].pic + " - " + goals[i].label+"\n"
+  }
+
+  for (const i of comp.others) {
+    dispPasok = dispPasok + goals[i].pic + " - " + goals[i].label+"\n"
+  }
+
+  const message = new MessageEmbed()
+  .setColor(comp.svs.length > 0 ? 'GREEN' : 'RED')
+  .setTitle(day+" colony actions - "+zoned.getHours()+"h"+ " to "+getHours(addHours(zoned, 1))+"h")
+  .setDescription(comp.svs.length > 0 ? `🟢 ${comp.svs.length} shared goal${comp.svs.length > 1 ? "s" : ""} with SvS` : "🔴 no shared goal with SvS")
+	.setThumbnail(comp.svs.length > 0 ? 'https://upload.wikimedia.org/wikipedia/fr/thumb/3/3b/Raspberry_Pi_logo.svg/langfr-130px-Raspberry_Pi_logo.svg.png' : 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/Forbidden_Symbol_Transparent.svg/400px-Forbidden_Symbol_Transparent.svg.png')
+  if (comp.svs.length > 0 && comp.others.length > 0) {
+    message.addFields(
+      {name: `Matching SvS goals`, value: dispOk},
+      {name: `Other${comp.others.length > 1 ? "s" : ""}`, value: dispPasok}
+    )
+  } else if (comp.svs.length > 0) {
+    message.addField(`Matching SvS goals`, dispOk)
+  } else if (comp.others.length > 0) {
+    message.addField(`Goal${comp.others.length > 1 ? "s" : ""}`, dispPasok)
+  }
+  message.setFooter({text: 'Timezone set to UTC'})
 
   return message
 }
 
-const getAlldayColonyAction = (d = new Date()) => {
+const getAlldayColonyAction = (d = new Date(), timezone = 'UTC') => {
   const daygoals = colonyactions[d.getUTCDay()]
   const day = days[d.getUTCDay()]
   const message = new MessageEmbed()  
@@ -105,14 +150,15 @@ const getAlldayColonyAction = (d = new Date()) => {
       content += goals[daygoals[i][j]].pic+" - "+goals[daygoals[i][j]].label
       if (j*1+1 < daygoals[i].length) content += '\n'
     }
-    const name = `${i}h, ${i*1+8}h and ${i*1+16}h UTC`
+    const name = `${getZonedHours(timezone, i)}h, ${getZonedHours(timezone, i*1+8)}h and ${getZonedHours(timezone, i*1+16)}h`
     message.addField(name, content)
   }
+  message.setFooter({text: 'Timezone set to UTC'})
 
   return message
 }
 
-const searchCa = (d = new Date(), goal) => {
+const searchCa = (d = new Date(), goal, timezone = 'UTC') => {
   const daygoals = colonyactions[d.getUTCDay()]
   goal = parseInt(goal)
   let matching = []
@@ -125,7 +171,7 @@ const searchCa = (d = new Date(), goal) => {
   if (matching.length > 0) {
     matching = matching.sort((a,b)=>a-b)
     for (const i in matching) {
-      content += matching[i]+"h"
+      content += getZonedHours(timezone, matching[i])+"h"
       if (i*1+2 < matching.length) {
         content += ", "
       }
@@ -133,7 +179,6 @@ const searchCa = (d = new Date(), goal) => {
         content += " and "
       }
     }
-    content += " UTC"
   } else {
     content = "No result for that..."
   }
@@ -144,10 +189,12 @@ const searchCa = (d = new Date(), goal) => {
   .setTitle(goals[goal].pic+" - "+goals[goal].label)
   .setDescription(content)
   .setThumbnail("https://www.pinclipart.com/picdir/big/142-1425732_marine-clipart.png")
+  message.setFooter({text: 'Timezone set to UTC'})
+
   return message
 }
 
-const getDayColonyActions = (d = new Date()) => {
+const getDayColonyActions = (d = new Date(), timezone = 'UTC') => {
   const tab = getSortedDayComparative(d)
   const day = days[d.getUTCDay()]
   const message = new MessageEmbed()
@@ -162,34 +209,36 @@ const getDayColonyActions = (d = new Date()) => {
 
     for (let i = 0; i < 3; i++) {
       for (const j in item.hours) {
-        dispHours = dispHours+(item.hours[j]*1+i*8 === 0 ? "0h30, " : item.hours[j]*1+i*8+"h, ")
+        dispHours = dispHours+getZonedHours(timezone, item.hours[j]*1+i*8)+"h"
+        dispHours += (i === 2 && parseInt(j) === item.hours.length-2) ? " and " : ", "
       }
     }
-    dispHours = dispHours.substring(0, dispHours.length - 2) + " UTC"
+    dispHours = dispHours.substring(0, dispHours.length - 2)
 
     for (const obj of item.goals) {
       dispObj=dispObj+goals[obj].pic+" - "+goals[obj].label+"\n"
     }
     message.addField(dispHours,dispObj)
   }
+  message.setFooter({text: 'Timezone set to UTC'})
 
   return message
 }
 
-const getGoals = (obj) => {
+/* const getGoals = (obj) => {
   return goals[obj]
 }
 
 const getSvs = (d = new Date()) => {
   const day = d.getUTCDay()
   return colonyactions[day].svs
-}
+} */
 
 exports.searchCa = searchCa
 exports.getSortedDayComparative = getSortedDayComparative
 exports.getHourComparative = getHourComparative
 exports.getDayColonyActions = getDayColonyActions
-exports.getGoals = getGoals
-exports.getSvs = getSvs
+/* exports.getGoals = getGoals
+exports.getSvs = getSvs */
 exports.getHourColonyActions = getHourColonyActions
 exports.getAlldayColonyAction = getAlldayColonyAction

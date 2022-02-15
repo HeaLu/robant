@@ -27,7 +27,7 @@ module.exports = client => {
       const friday = format(nextFriday(today), "EEEE, MMMM d")
   
       const message = new MessageEmbed()
-      .setColor('#ff0000')
+      .setColor('PURPLE')
       .setTitle("Alliance expedition of " + friday)
       .setDescription(`<@&${config.roles.members}> please indicate all your availability for the event. You can put several`)
       .setThumbnail('https://e7.pngegg.com/pngimages/44/527/png-clipart-tropical-tree-tree-tropical-tree.png')
@@ -52,7 +52,7 @@ module.exports = client => {
 
     const remind = new CronJob('00 00 00 * * WED', async function () {
       const message = new MessageEmbed()
-      .setColor('#ff0000')
+      .setColor('BLUE')
       .setTitle("Reminder")
       .setThumbnail("https://www.clipartmax.com/png/full/18-185824_bell-icon-bell-icon.png")
       .setDescription(`<@&${config.roles.members}> please don't forget to give your availabilities !`)
@@ -63,7 +63,7 @@ module.exports = client => {
 
     const checking = new CronJob('00 00 21 * * WED', async function () {
       const message = new MessageEmbed()
-      .setColor('#ff0000')
+      .setColor('BLUE')
       .setTitle("Checking")
       .setThumbnail("https://www.clipartmax.com/png/full/1-11037_green-check-mark-transparent.png")
       .setDescription(`<@&${config.roles.officers}> please check the correct registration for the event`)

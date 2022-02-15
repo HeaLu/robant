@@ -10,7 +10,7 @@ module.exports = class Ae {
     this._job = new CronJob('0 */5 * * * *', this.tick, null, false, 'UTC', this)
     this._remind1 = new CronJob(subHours(this._date, -1), async function () {
       const message = new MessageEmbed()
-      .setColor('#ff0000')
+      .setColor('BLUE')
       .setTitle("Reminder")
       .setThumbnail("https://www.clipartmax.com/png/full/18-185824_bell-icon-bell-icon.png")
       .setDescription(`<@&${config.roles.members}> don't forget Alliance Expedition today at ${this._date.getUTCHours()}h UTC`)
@@ -18,7 +18,7 @@ module.exports = class Ae {
     }, null, false, 'Europe/Paris', this)
     this._remind2 = new CronJob(subHours(this._date, -1), async function () {
       const message = new MessageEmbed()
-      .setColor('#ff0000')
+      .setColor('BLUE')
       .setTitle("Reminder")
       .setThumbnail("https://www.clipartmax.com/png/full/18-185824_bell-icon-bell-icon.png")
       .setDescription(`<@&${config.roles.members}> Alliance Expedition in 1 hour, prepare yourself for battle !`)

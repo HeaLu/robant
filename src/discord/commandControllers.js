@@ -4,6 +4,13 @@ const ca = require("../services/caServices")
 const config = require('../config')
 const { next } = require('../tools/constants')
 const { isFriday } = require('date-fns')
+const { utcToZonedTime, getTimezoneOffset, zonedTimeToUtc } = require('date-fns-tz')
+const { MessageEmbed } = require('discord.js')
+const Member = require('../models/memberModel')
+
+const timezoneFooter = (timezone) => {
+  return `Timezone set to ${timezone === "UTC" ? "UTC. Set your own by using /timezone command" : timezone}`
+}
 
 const help = {
   color: 0xff0000,
@@ -20,7 +27,7 @@ const help = {
     },
     {
       name: "⏰ Colony actions",
-      value: "**/ca hour** to get hourly colony actions\n**/ca svs** to get daily colony actions matching with SvS\n**/ca allday** to get all colony action of a given day\n**/ca search** to find all hours in a day matching with given goal"
+      value: `**/ca hour** to get hourly colony actions [NOT WORKING CURRENTLY]\n**/ca svs** to get daily colony actions matching with SvS\n**/ca allday** to get all colony action of a given day\n**/ca search** to find all hours in a day matching with given goal\n**/timezone** permits you to set your own timezone`
     },
     {
       name: "🌎 Translator",
@@ -43,34 +50,93 @@ const help = {
 
 module.exports = client => {
   const AeInstance = new Ae(client)
-  client.on('interactionCreate', async interaction => {
+  client.on('interactionCreate', async (interaction, user) => {
     if (!interaction.isCommand()) return;
     const { commandName } = interaction;
     const { _subcommand, _hoistedOptions} = interaction.options
     switch (commandName) {
-      case "ca": 
-        if (_subcommand === "hour") {
-          const weekday = _hoistedOptions.find(el => el.name === "weekday")
-          const hour = _hoistedOptions.find(el => el.name === "hour")
-          const day = weekday !== undefined ? next[weekday.value] : new Date()
-          day.setUTCHours(hour.value)
-          interaction.reply({embeds: [ca.getHourColonyActions(day)], ephemeral: true})
+      case "timezone": 
+        const set = _hoistedOptions.find(el => el.name === "set")
+        if (!set) {          
+          const member = await Member.findOne({discordId: interaction.member.id})
+          const memberTz = member ? member.timezone : 'UTC'
+          const message = new MessageEmbed()
+          message.setColor("BLUE").setTitle(`Your timezone is currently **__${memberTz}__**`)
+          .setDescription("If you want to change it, type **/timezone set** *yourtimezone*. You can find all timezones [by clicking here](https://timezonedb.com/time-zones), expected codes are in the 3rd column")
+          interaction.reply({embeds: [message], ephemeral: true})
+          break
         }
+        const timezone = set.value
+        const test = utcToZonedTime(new Date(), timezone)
+        if (isNaN(test)) {
+          const message = new MessageEmbed()
+          message.setColor("RED").setTitle("Error while detecting your timezone")
+          .setDescription('Are you sure it\'s in a valid format (example "Europe/Paris") ? You can find all timezones [by clicking here](https://timezonedb.com/time-zones), expected codes are in the 3rd column')
+          interaction.reply({embeds: [message], ephemeral: true})
+          break
+        } else {
+          Member.findOneAndUpdate({idDiscord: interaction.member.id}, {$set: {idDiscord: interaction.member.id, timezone}}, {upsert: true}).then(result => {
+            const message = new MessageEmbed()
+            message.setColor("GREEN").setTitle("Success")
+            .setDescription('Your timezone is now saved and will be used when you will use **/ca** commands')
+            interaction.reply({embeds: [message], ephemeral: true})
+          }).catch(err => {
+            const message = new MessageEmbed()
+            message.setColor("RED").setTitle("Error")
+            .setDescription(err)
+            interaction.reply({embeds: [message], ephemeral: true})
+          })
+        }
+        break
+      case "ca":
+        const member = await Member.findOne({discordId: interaction.member.id})
+        const memberTz = member ? member.timezone : 'UTC'
+
+        /*if (_subcommand === "hour") {
+          let weekday = _hoistedOptions.find(el => el.name === "weekday")
+          let hours = _hoistedOptions.find(el => el.name === "hours")
+          weekday = weekday.value
+          hours = hours.value
+          const date = zonedTimeToUtc(next[weekday.value], memberTz)
+          date.setUTCHours(hours.value)
+
+          console.log(date);
+          const offset = getTimezoneOffset(memberTz) / 60 / 60 / 1000
+
+          
+          hours = parseInt(hours*1-offset)
+          if (hours > 23) {
+            hours = hours - 24
+            weekday*1 + 1 > 6 ? weekday = 0 : weekday*1 + 1
+          } else if (hours < 0) {
+            hours += 24
+            weekday*1 - 1 < 0 ? weekday = 6 : weekday*1 - 1
+          }
+          //const message = ca.getHourColonyActions(weekday, hours, memberTz)
+          //message.setFooter({text: timezoneFooter(memberTz)})
+          //interaction.reply({embeds: [message], ephemeral: true})
+        }*/
         if (_subcommand === "svs") {
           const weekday = _hoistedOptions.find(el => el.name === "weekday")
           const day = next[weekday.value]
-          interaction.reply({embeds: [ca.getDayColonyActions(day)], ephemeral: true})
+          const message = ca.getDayColonyActions(day, memberTz)
+          message.setFooter({text: timezoneFooter(memberTz)})
+          interaction.reply({embeds: [message], ephemeral: true})
         }
         if (_subcommand === "allday") {
           const weekday = _hoistedOptions.find(el => el.name === "weekday")
           const day = next[weekday.value]
-          interaction.reply({embeds: [ca.getAlldayColonyAction(day)], ephemeral: true})
+          const message = ca.getAlldayColonyAction(day, memberTz)
+          message.setFooter({text: timezoneFooter(memberTz)})
+          interaction.reply({embeds: [message], ephemeral: true})
         }
         if (_subcommand === "search") {
           const weekday = _hoistedOptions.find(el => el.name === "weekday")
           const goal = _hoistedOptions.find(el => el.name === "goal")
           const day = next[weekday.value]
-          interaction.reply({embeds: [ca.searchCa(day, goal.value)], ephemeral: true})
+          const message = ca.searchCa(day, goal.value, memberTz)
+          message.setFooter({text: timezoneFooter(memberTz)})
+          interaction.reply({embeds: [message], ephemeral: true})
         }
         break
       case "daily": 

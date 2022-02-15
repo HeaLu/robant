@@ -12,6 +12,10 @@ if (envFound.error) {
 
 
 const config = {
+  db: {
+    uri: process.env.MONGODB_URI,
+    agendaCollection: process.env.AGENDA_COLLECTION
+  },
   discord: {
     token: process.env.DISCORD_TOKEN,
     clientId: process.env.DISCORD_CLIENT_ID,
