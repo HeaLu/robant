@@ -59,6 +59,7 @@ module.exports = client => {
         const set = _hoistedOptions.find(el => el.name === "set")
         if (!set) {          
           const member = await Member.findOne({discordId: interaction.member.id})
+          console.log(member);
           const memberTz = member ? member.timezone : 'UTC'
           const message = new MessageEmbed()
           message.setColor("BLUE").setTitle(`Your timezone is currently **__${memberTz}__**`)
@@ -75,15 +76,15 @@ module.exports = client => {
           interaction.reply({embeds: [message], ephemeral: true})
           break
         } else {
-          Member.findOneAndUpdate({idDiscord: interaction.member.id}, {$set: {idDiscord: interaction.member.id, timezone}}, {upsert: true}).then(result => {
+          Member.findOneAndUpdate({discordId: interaction.member.id}, {$set: {discordId: interaction.member.id, timezone}}, {upsert: true}).then(result => {
             const message = new MessageEmbed()
             message.setColor("GREEN").setTitle("Success")
             .setDescription('Your timezone is now saved and will be used when you will use **/ca** commands')
             interaction.reply({embeds: [message], ephemeral: true})
-          }).catch(err => {
+          }).catch((err) => {
             const message = new MessageEmbed()
             message.setColor("RED").setTitle("Error")
-            .setDescription(err)
+            .setDescription("Problem while saving your timezone")
             interaction.reply({embeds: [message], ephemeral: true})
           })
         }

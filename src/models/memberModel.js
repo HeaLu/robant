@@ -2,7 +2,7 @@ const mongoose = require("mongoose")
 
 const memberSchema = new mongoose.Schema(
   {
-    idDiscord: {
+    discordId: {
       type: String,
       required: true,
       unique: true
