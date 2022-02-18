@@ -7,10 +7,23 @@ const memberSchema = new mongoose.Schema(
       required: true,
       unique: true
     },
+    discordName: {
+      type: String
+    },
     timezone: {
       type: String,
-      required: true
-    }
+      default: 'UTC'
+    },
+    usage: [
+      {
+        command: String,
+        qty: {
+          type: Number,
+          default: 0
+        },
+        last: Date
+      }
+    ]
   },
   { timestamps: { createdAt: "created_at" } }
 )

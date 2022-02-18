@@ -7,6 +7,7 @@ const { isFriday } = require('date-fns')
 const { utcToZonedTime, getTimezoneOffset, zonedTimeToUtc } = require('date-fns-tz')
 const { MessageEmbed } = require('discord.js')
 const Member = require('../models/memberModel')
+const { el } = require('date-fns/locale')
 
 const timezoneFooter = (timezone) => {
   return `Timezone set to ${timezone === "UTC" ? "UTC. Set your own by using /timezone command" : timezone}`
@@ -50,15 +51,30 @@ const help = {
 
 module.exports = client => {
   const AeInstance = new Ae(client)
-  client.on('interactionCreate', async (interaction, user) => {
+  client.on('interactionCreate', async (interaction) => {
     if (!interaction.isCommand()) return;
     const { commandName } = interaction;
     const { _subcommand, _hoistedOptions} = interaction.options
+
+    const member = await Member.findOne({discordId: interaction.member.id})
+    if (!member) {
+      member = new Member({discordId: interaction.member.id})
+    }
+    const index = member.usage.findIndex(el => el.command === commandName)
+    if (index === -1) {
+      member.usage.push({command: commandName, qty: 1, last: new Date()})
+    } else {
+      member.usage[index].qty++
+      member.usage[index].last = new Date()
+    }
+    member.markModified("usage")
+    member.discordName = interaction.member.displayName
+    member.save()
+
     switch (commandName) {
       case "timezone": 
         const set = _hoistedOptions.find(el => el.name === "set")
         if (!set) {          
-          const member = await Member.findOne({discordId: interaction.member.id})
           console.log(member);
           const memberTz = member ? member.timezone : 'UTC'
           const message = new MessageEmbed()
@@ -76,7 +92,7 @@ module.exports = client => {
           interaction.reply({embeds: [message], ephemeral: true})
           break
         } else {
-          Member.findOneAndUpdate({discordId: interaction.member.id}, {$set: {discordId: interaction.member.id, timezone}}, {upsert: true}).then(result => {
+          Member.findOneAndUpdate({discordId: interaction.member.id}, {$set: {timezone}}).then(result => {
             const message = new MessageEmbed()
             message.setColor("GREEN").setTitle("Success")
             .setDescription('Your timezone is now saved and will be used when you will use **/ca** commands')
