@@ -218,7 +218,7 @@ module.exports = client => {
         message.reply("⚔️😈")
         break
       case "!meta" :
-        message.reply("🌪️👼")
+        message.reply("👼☕")
         break
       case "!iesu" :
         message.reply("🚜👩‍💻")
