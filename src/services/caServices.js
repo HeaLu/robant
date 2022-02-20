@@ -81,8 +81,8 @@ module.exports = class Ca {
   }
   
   getHourColonyActions() {
-    const comp = this.getHourComparative(this.localHour)
-    const day = days[this.localHour.getDay()]
+    const comp = this.getHourComparative(this._date)
+    const day = days[this.localHour.getUTCDay()]
     let dispOk = ""
     let dispPasok = ""
   

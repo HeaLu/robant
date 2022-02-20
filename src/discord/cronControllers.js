@@ -55,7 +55,7 @@ module.exports = (client, AeInstance) => {
         deleted = await channel.bulkDelete(100);
       } while (deleted.size != 0);
   
-      const currentCa = new Ca().getHourColonyActions()
+      const currentCa = new Ca(today, 1).getHourColonyActions()
       const dayCa = new Ca().getDayColonyActions()
       const nextCa = new Ca(addHours(today, 1)).getHourColonyActions()
       const overnextCa = new Ca(addHours(today, 2)).getHourColonyActions()
