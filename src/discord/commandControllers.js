@@ -26,7 +26,7 @@ const help = {
     },
     {
       name: "⏰ Colony actions",
-      value: `**/ca hour** to get hourly colony actions [NOT WORKING CURRENTLY]\n**/ca svs** to get daily colony actions matching with SvS\n**/ca allday** to get all colony action of a given day\n**/ca search** to find all hours in a day matching with given goal\n**/timezone** permits you to set your own timezone`
+      value: `**/ca hour** to get hourly colony actions\n**/ca svs** to get daily colony actions matching with SvS\n**/ca allday** to get all colony action of a given day\n**/ca search** to find all hours in a day matching with given goal\n**/timezone** permits you to set your own timezone`
     },
     {
       name: "🌎 Translator",
