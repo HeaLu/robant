@@ -63,11 +63,11 @@ module.exports = class Ca {
   }
 
   getSortedDayComparative = () => {
-    const daygoals = getDayComparative(this._date)
+    const daygoals = this.getDayComparative(this._date)
     let newtab = []
   
     for (const [key, value] of Object.entries(daygoals)) {
-      let match = newtab.findIndex(el => arraysEqual(el.goals, value))
+      let match = newtab.findIndex(el => this.arraysEqual(el.goals, value))
       if (match === -1) {
         newtab.push({hours: [parseInt(key)], goals: value})
       } else {
@@ -172,7 +172,7 @@ module.exports = class Ca {
   }
   
   getDayColonyActions () {
-    const tab = getSortedDayComparative(this._date)
+    const tab = this.getSortedDayComparative(this._date)
     const day = days[this._date.getUTCDay()]
     const message = new MessageEmbed()
     .setColor("BLUE")
