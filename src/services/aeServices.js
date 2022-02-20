@@ -1,5 +1,5 @@
 const {CronJob, CronTime} = require('cron')
-const { formatDistance, startOfDay, subHours, startOfHour, addSeconds } = require('date-fns')
+const { formatDistance, startOfDay, subHours, startOfHour, nextFriday, format } = require('date-fns')
 const config = require('../config')
 const { MessageEmbed } = require('discord.js')
 
@@ -7,7 +7,17 @@ module.exports = class Ae {
   constructor(client) {
     this._client = client
     this._date = new Date()
-    this._job = new CronJob('0 */5 * * * *', this.tick, null, false, 'UTC', this)
+
+    this._job = new CronJob('0 */5 * * * *', async function () {
+      if (new Date() > this._date) {
+        this.stop()
+        return
+      }
+      const diff = formatDistance(new Date(), this._date)
+      const channel = await this._client.channels.cache.get(config.channels.expedition)
+      if (channel.name !== `🌴-ae-in-${diff}`) channel.setName(`🌴-ae-in-${diff}`)
+    }, null, false, 'UTC', this)
+
     this._remind1 = new CronJob(subHours(this._date, -1), async function () {
       const message = new MessageEmbed()
       .setColor('BLUE')
@@ -15,34 +25,61 @@ module.exports = class Ae {
       .setThumbnail("https://www.clipartmax.com/png/full/18-185824_bell-icon-bell-icon.png")
       .setDescription(`<@&${config.roles.members}> don't forget Alliance Expedition today at ${this._date.getUTCHours()}h UTC`)
       this._client.channels.cache.get(config.channels.expedition).send({embeds: [message]})
-    }, null, false, 'Europe/Paris', this)
+    }, null, false, 'UTC', this)
+
     this._remind2 = new CronJob(subHours(this._date, -1), async function () {
       const message = new MessageEmbed()
       .setColor('BLUE')
       .setTitle("Reminder")
       .setThumbnail("https://www.clipartmax.com/png/full/18-185824_bell-icon-bell-icon.png")
       .setDescription(`<@&${config.roles.members}> Alliance Expedition in 1 hour, prepare yourself for battle !`)
-      this.client.channels.cache.get(config.channels.expedition).send({embeds: [message]})
-    }, null, false, 'Europe/Paris', this)
+      this._client.channels.cache.get(config.channels.expedition).send({embeds: [message]})
+    }, null, false, 'UTC', this)
   }
 
   get running() {
     return this._job.running
   }
-
-
-
-  async tick() {
-    if (new Date() > this._date) {
-      this.stop()
-      return
-    }
-    const diff = formatDistance(new Date(), this._date)
-    const channel = await this.getChannel()
-    if (channel.name !== `🌴-ae-in-${diff}`) channel.setName(`🌴-ae-in-${diff}`)
+  
+  async resetName() {    
+    const expedition = await this._client.channels.cache.get(config.channels.expedition)
+    if (expedition.name !== "🌴-alliance-expedition") expedition.setName(`🌴-alliance-expedition`)
   }
 
-  async getChannel() {
+  async empty () {    
+    const channel = await this._client.channels.fetch(config.channels.expedition)
+    let deleted;
+    do {
+      deleted = await channel.bulkDelete(100);
+    } while (deleted.size != 0);
+  }
+
+  async poll () {
+    const today = new Date()
+    const friday = format(nextFriday(today), "EEEE, MMMM d")
+
+    const message = new MessageEmbed()
+    .setColor('PURPLE')
+    .setTitle("Alliance expedition of " + friday)
+    .setDescription(`<@&${config.roles.members}> please indicate all your availabilities for the event. You can put several`)
+    .setThumbnail('https://www.pinclipart.com/picdir/big/538-5381843_clipart-flower-images-png-transparent-background-tropical-flower.png')
+    .addFields(
+      {name: "11h UTC", value: "1️⃣", inline: true},
+      {name: "13h UTC", value: "2️⃣", inline: true},
+      {name: '\u200b', value: '\u200b'},
+      {name: "20h UTC", value: "3️⃣", inline: true}, 
+      {name: "23h UTC", value: "4️⃣", inline: true}
+    )
+    .setFooter({text: "Please come back here next week !"})
+
+    const display = await this._client.channels.cache.get(config.channels.expedition).send({embeds: [message]})
+    await display.react('1️⃣')
+    await display.react('2️⃣')
+    await display.react('3️⃣')
+    await display.react('4️⃣')
+  }
+
+    async getChannel() {
     const channel = await this._client.channels.cache.get(config.channels.expedition)
     return channel
   }

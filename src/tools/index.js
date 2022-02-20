@@ -1,15 +1,22 @@
-const { addDays, nextMonday, nextTuesday, nextWednesday, nextThursday, nextFriday, nextSaturday, nextSunday } = require('date-fns')
+const addDays = require('date-fns/addDays')
+const nextMonday = require('date-fns/nextMonday')
+const nextTuesday = require('date-fns/nextTuesday')
+const nextWednesday = require('date-fns/nextWednesday')
+const nextThursday = require('date-fns/nextThursday')
+const nextFriday = require('date-fns/nextFriday')
+const nextSaturday = require('date-fns/nextSaturday')
+const nextSunday = require('date-fns/nextSunday')
 
 const next = {
   get today() { return new Date()},
   get tomorrow() { return addDays(new Date(), 1)},
-  get sunday() { return nextSunday(new Date())},
   get monday() { return nextMonday(new Date())},
   get tuesday() { return nextTuesday(new Date())},
   get wednesday() { return nextWednesday(new Date())},
   get thursday() { return nextThursday(new Date())},
   get friday() { return nextFriday(new Date())},
-  get saturday() { return nextSaturday(new Date())}
+  get saturday() { return nextSaturday(new Date())},
+  get sunday() { return nextSunday(new Date())}
 }
 const days = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 

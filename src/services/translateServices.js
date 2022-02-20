@@ -7,7 +7,7 @@ const langs = [
   {short: 'DA', label: 'Danish', flags: ['🇩🇰']},
   {short: 'DE', label: 'German', flags: ['🇩🇪']},
   {short: 'EL', label: 'Greek', flags: ['🇬🇷']},
-  {short: 'EN', label: 'English', flags: ['🇺🇸', '🇬🇧', '🇺🇲']},
+  {short: 'EN', label: 'English', flags: ['🇬🇧', '🇺🇸', '🇺🇲']},
   {short: 'ES', label: 'Spanish', flags: ['🇪🇸']},
   {short: 'ET', label: 'Estonian', flags: ['🇪🇪']},
   {short: 'FI', label: 'Finnish', flags: ['🇫🇮']},

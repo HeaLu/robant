@@ -1,12 +1,12 @@
 const CronJob = require('cron').CronJob
 const daily = require('../services/dailyServices')
-const ca = require('../services/caServices')
-const { nextFriday, format, addHours } = require('date-fns')
+const Ca = require('../services/caServices')
+const addHours = require('date-fns/addHours')
 const config = require('../config')
 const { MessageEmbed } = require('discord.js')
 
 
-module.exports = client => {
+module.exports = (client, AeInstance) => {
   const dailyAnt = new CronJob('00 00 00 * * *', async function() {
     const today = new Date()
     if (config.channels.officers) client.channels.cache.get(config.channels.officers).send(daily.getGameDaily(today))
@@ -17,35 +17,8 @@ module.exports = client => {
   
   if (config.channels.expedition && config.roles.members) {
     const expedition = new CronJob('00 00 00 * * SAT', async function () {
-      const channel = await client.channels.fetch(config.channels.expedition)
-      let deleted;
-      do {
-        deleted = await channel.bulkDelete(100);
-      } while (deleted.size != 0);
-  
-      const today = new Date()
-      const friday = format(nextFriday(today), "EEEE, MMMM d")
-  
-      const message = new MessageEmbed()
-      .setColor('PURPLE')
-      .setTitle("Alliance expedition of " + friday)
-      .setDescription(`<@&${config.roles.members}> please indicate all your availability for the event. You can put several`)
-      .setThumbnail('https://e7.pngegg.com/pngimages/44/527/png-clipart-tropical-tree-tree-tropical-tree.png')
-      .setImage('https://scontent-cdt1-1.xx.fbcdn.net/v/t39.30808-6/242891060_262968579017194_8813702083471812699_n.jpg?_nc_cat=105&ccb=1-5&_nc_sid=973b4a&_nc_ohc=mWdLAMtf9L0AX-Xj1uD&_nc_ht=scontent-cdt1-1.xx&oh=00_AT9sUf-uA-UQ3Qno1kkJqQCnwUvGRg87_h9A2amRoTrONA&oe=62072416')
-      .addFields(
-        {name: "11h UTC", value: "1️⃣", inline: true},
-        {name: "13h UTC", value: "2️⃣", inline: true},
-        {name: '\u200b', value: '\u200b'},
-        {name: "20h UTC", value: "3️⃣", inline: true}, 
-        {name: "23h UTC", value: "4️⃣", inline: true}
-      )
-      .setFooter({text: "Please come back here next week !"})
-  
-      const display = await client.channels.cache.get(config.channels.expedition).send({embeds: [message]})
-      await display.react('1️⃣')
-      await display.react('2️⃣')
-      await display.react('3️⃣')
-      await display.react('4️⃣')
+      await AeInstance.empty()
+      AeInstance.poll()
     }, null, true, 'UTC')
   
     expedition.start()
@@ -82,10 +55,10 @@ module.exports = client => {
         deleted = await channel.bulkDelete(100);
       } while (deleted.size != 0);
   
-      const currentCa = ca.getHourColonyActions()
-      const dayCa = ca.getDayColonyActions()
-      const nextCa = ca.getHourColonyActions(addHours(today, 1))
-      const overnextCa = ca.getHourColonyActions(addHours(today, 2))
+      const currentCa = new Ca().getHourColonyActions()
+      const dayCa = new Ca().getDayColonyActions()
+      const nextCa = new Ca(addHours(today, 1)).getHourColonyActions()
+      const overnextCa = new Ca(addHours(today, 2)).getHourColonyActions()
       currentCa.setTitle("Current colony actions")
       nextCa.setTitle("Next hour colony actions")
       overnextCa.setTitle("In two hours colony actions")

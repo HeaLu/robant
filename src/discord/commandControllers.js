@@ -1,13 +1,11 @@
 const daily = require('../services/dailyServices')
-const Ae = require('../services/aeServices')
-const ca = require("../services/caServices")
+const Ca = require("../services/caServices")
 const config = require('../config')
-const { next } = require('../tools/constants')
-const { isFriday } = require('date-fns')
-const { utcToZonedTime, getTimezoneOffset, zonedTimeToUtc } = require('date-fns-tz')
+const { next } = require('../tools')
+const isFriday = require('date-fns/isFriday')
+const utcToZonedTime = require('date-fns-tz/utcToZonedTime')
 const { MessageEmbed } = require('discord.js')
 const Member = require('../models/memberModel')
-const { el } = require('date-fns/locale')
 
 const timezoneFooter = (timezone) => {
   return `Timezone set to ${timezone === "UTC" ? "UTC. Set your own by using /timezone command" : timezone}`
@@ -49,14 +47,13 @@ const help = {
   ]
 }
 
-module.exports = client => {
-  const AeInstance = new Ae(client)
+module.exports = (client, AeInstance) => {
   client.on('interactionCreate', async (interaction) => {
     if (!interaction.isCommand()) return;
     const { commandName } = interaction;
     const { _subcommand, _hoistedOptions} = interaction.options
 
-    const member = await Member.findOne({discordId: interaction.member.id})
+    let member = await Member.findOne({discordId: interaction.member.id})
     if (!member) {
       member = new Member({discordId: interaction.member.id})
     }
@@ -69,90 +66,62 @@ module.exports = client => {
     }
     member.markModified("usage")
     member.discordName = interaction.member.displayName
-    member.save()
 
     switch (commandName) {
       case "timezone": 
         const set = _hoistedOptions.find(el => el.name === "set")
-        if (!set) {          
-          console.log(member);
-          const memberTz = member ? member.timezone : 'UTC'
+        if (!set) {
           const message = new MessageEmbed()
-          message.setColor("BLUE").setTitle(`Your timezone is currently **__${memberTz}__**`)
+          message.setColor("BLUE").setTitle(`Your timezone is currently **__${member.timezone}__**`)
           .setDescription("If you want to change it, type **/timezone set** *yourtimezone*. You can find all timezones [by clicking here](https://timezonedb.com/time-zones), expected codes are in the 3rd column")
           interaction.reply({embeds: [message], ephemeral: true})
           break
-        }
-        const timezone = set.value
-        const test = utcToZonedTime(new Date(), timezone)
-        if (isNaN(test)) {
-          const message = new MessageEmbed()
-          message.setColor("RED").setTitle("Error while detecting your timezone")
-          .setDescription('Are you sure it\'s in a valid format (example "Europe/Paris") ? You can find all timezones [by clicking here](https://timezonedb.com/time-zones), expected codes are in the 3rd column')
-          interaction.reply({embeds: [message], ephemeral: true})
-          break
         } else {
-          Member.findOneAndUpdate({discordId: interaction.member.id}, {$set: {timezone}}).then(result => {
+          const test = utcToZonedTime(new Date(), set.value)
+          if (isNaN(test)) {
+            const message = new MessageEmbed()
+            message.setColor("RED").setTitle("Error while detecting your timezone")
+            .setDescription('Are you sure it\'s in a valid format (example "Europe/Paris") ? You can find all timezones [by clicking here](https://timezonedb.com/time-zones), expected codes are in the 3rd column')
+            interaction.reply({embeds: [message], ephemeral: true})
+            break
+          } else {
+            member.timezone = set.value
             const message = new MessageEmbed()
             message.setColor("GREEN").setTitle("Success")
-            .setDescription('Your timezone is now saved and will be used when you will use **/ca** commands')
+            .setDescription(`Your timezone is now **__${member.timezone}__** and it will be used when you will use **/ca** commands`)
             interaction.reply({embeds: [message], ephemeral: true})
-          }).catch((err) => {
-            const message = new MessageEmbed()
-            message.setColor("RED").setTitle("Error")
-            .setDescription("Problem while saving your timezone")
-            interaction.reply({embeds: [message], ephemeral: true})
-          })
+          }
         }
         break
       case "ca":
-        const member = await Member.findOne({discordId: interaction.member.id})
-        const memberTz = member ? member.timezone : 'UTC'
-
-        /*if (_subcommand === "hour") {
-          let weekday = _hoistedOptions.find(el => el.name === "weekday")
-          let hours = _hoistedOptions.find(el => el.name === "hours")
-          weekday = weekday.value
-          hours = hours.value
-          const date = zonedTimeToUtc(next[weekday.value], memberTz)
-          date.setUTCHours(hours.value)
-
-          console.log(date);
-          const offset = getTimezoneOffset(memberTz) / 60 / 60 / 1000
-
-          
-          hours = parseInt(hours*1-offset)
-          if (hours > 23) {
-            hours = hours - 24
-            weekday*1 + 1 > 6 ? weekday = 0 : weekday*1 + 1
-          } else if (hours < 0) {
-            hours += 24
-            weekday*1 - 1 < 0 ? weekday = 6 : weekday*1 - 1
-          }
-          //const message = ca.getHourColonyActions(weekday, hours, memberTz)
-          //message.setFooter({text: timezoneFooter(memberTz)})
-          //interaction.reply({embeds: [message], ephemeral: true})
-        }*/
+        if (_subcommand === "hour") {
+          const weekday = _hoistedOptions.find(el => el.name === "weekday")
+          const hours = _hoistedOptions.find(el => el.name === "hours")
+          const day = next[weekday.value].setHours(hours.value)
+          const message = new Ca(day, member.timezone).getHourColonyActions()
+          message.setFooter({text: timezoneFooter(member.timezone)})
+          interaction.reply({embeds: [message], ephemeral: true})
+        }
         if (_subcommand === "svs") {
           const weekday = _hoistedOptions.find(el => el.name === "weekday")
           const day = next[weekday.value]
-          const message = ca.getDayColonyActions(day, memberTz)
-          message.setFooter({text: timezoneFooter(memberTz)})
+          const message = new Ca(day, member.timezone).getDayColonyActions()
+          message.setFooter({text: timezoneFooter(member.timezone)})
           interaction.reply({embeds: [message], ephemeral: true})
         }
         if (_subcommand === "allday") {
           const weekday = _hoistedOptions.find(el => el.name === "weekday")
           const day = next[weekday.value]
-          const message = ca.getAlldayColonyAction(day, memberTz)
-          message.setFooter({text: timezoneFooter(memberTz)})
+          const message = new Ca(day, member.timezone).getAlldayColonyAction()
+          message.setFooter({text: timezoneFooter(member.timezone)})
           interaction.reply({embeds: [message], ephemeral: true})
         }
         if (_subcommand === "search") {
           const weekday = _hoistedOptions.find(el => el.name === "weekday")
           const goal = _hoistedOptions.find(el => el.name === "goal")
           const day = next[weekday.value]
-          const message = ca.searchCa(day, goal.value, memberTz)
-          message.setFooter({text: timezoneFooter(memberTz)})
+          const message = new Ca(day, member.timezone).searchCa(goal.value)
+          message.setFooter({text: timezoneFooter(member.timezone)})
           interaction.reply({embeds: [message], ephemeral: true})
         }
         break
@@ -204,6 +173,7 @@ module.exports = client => {
       default:
         break
     }
+    member.save()
   })
   
   client.on("messageCreate", message => {

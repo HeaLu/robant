@@ -2,7 +2,7 @@ const { SlashCommandBuilder } = require('@discordjs/builders');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const config = require('./config');
-const { goals, next } = require('./tools/constants');
+const { goals, next } = require('./tools');
 
 const formatDaysProposals = (option) => {
 	for (const day of Object.keys(next)) {
@@ -71,7 +71,7 @@ const commands = [
 				return option
 			})
 		)
-		/*.addSubcommand(subcommand => subcommand
+		.addSubcommand(subcommand => subcommand
 			.setName('hour')
 			.setDescription('Choose a day and hour to get its colony actions')
 			.addStringOption(option => { option
@@ -88,7 +88,7 @@ const commands = [
 				.setMinValue(0)
 				.setMaxValue(23)
 			)
-		)*/,
+		),
 	new SlashCommandBuilder()
 	.setName('timezone')
 	.setDescription('Show or set your current timezone')
