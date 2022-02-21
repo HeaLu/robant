@@ -114,7 +114,7 @@ module.exports = class Ca {
     return message
   }
 
-  getAlldayColonyAction () {
+  getAlldayColonyActions () {
     const daygoals = colonyactions[this._date.getUTCDay()]
     const day = days[this._date.getUTCDay()]
     const message = new MessageEmbed()  
@@ -171,7 +171,7 @@ module.exports = class Ca {
     return message
   }
   
-  getDayColonyActions () {
+  getSvsdayColonyActions () {
     const tab = this.getSortedDayComparative(this._date)
     const day = days[this._date.getUTCDay()]
     const message = new MessageEmbed()

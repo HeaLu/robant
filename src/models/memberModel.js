@@ -23,7 +23,11 @@ const memberSchema = new mongoose.Schema(
         },
         last: Date
       }
-    ]
+    ],
+    dailyMail: {
+      type: Boolean,
+      default: false
+    }
   },
   { timestamps: { createdAt: "created_at" } }
 )

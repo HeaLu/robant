@@ -12,6 +12,14 @@ const formatDaysProposals = (option) => {
 
 const commands = [
 	new SlashCommandBuilder()
+	.setName('dailymail')
+	.setDescription('You want a daily mail ?')
+	.addBooleanOption(option => option
+		.setName("subscribe")
+		.setDescription('if True will be send you a daily mail with colony actions')
+		.setRequired(true)
+	),
+	new SlashCommandBuilder()
 	.setName('daily')
 	.setDescription('Shows The Daily AnT')
 	.addStringOption(option => { option

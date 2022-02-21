@@ -54,9 +54,7 @@ module.exports = (client, AeInstance) => {
     const { _subcommand, _hoistedOptions} = interaction.options
 
     let member = await Member.findOne({discordId: interaction.member.id})
-    if (!member) {
-      member = new Member({discordId: interaction.member.id})
-    }
+    if (!member) member = new Member({discordId: interaction.member.id})
     const index = member.usage.findIndex(el => el.command === commandName)
     if (index === -1) {
       member.usage.push({command: commandName, qty: 1, last: new Date()})
@@ -64,10 +62,17 @@ module.exports = (client, AeInstance) => {
       member.usage[index].qty++
       member.usage[index].last = new Date()
     }
-    member.markModified("usage")
     member.discordName = interaction.member.displayName
 
     switch (commandName) {
+      case "dailymail":
+        const subscribe = _hoistedOptions.find(el => el.name === "subscribe")
+        member.dailyMail = subscribe.value
+        const message = new MessageEmbed()
+        message.setColor("GREEN").setTitle(`Success`)
+        .setDescription(subscribe.value ? "You'll now receive the daily mail at 0h30 UTC" : "You'll no longer receive the daily mail")
+        interaction.reply({embeds: [message], ephemeral: true})
+        break
       case "timezone": 
         const set = _hoistedOptions.find(el => el.name === "set")
         if (!set) {
@@ -105,14 +110,14 @@ module.exports = (client, AeInstance) => {
         if (_subcommand === "svs") {
           const weekday = _hoistedOptions.find(el => el.name === "weekday")
           const day = next[weekday.value]
-          const message = new Ca(day, member.timezone).getDayColonyActions()
+          const message = new Ca(day, member.timezone).getSvsdayColonyActions()
           message.setFooter({text: timezoneFooter(member.timezone)})
           interaction.reply({embeds: [message], ephemeral: true})
         }
         if (_subcommand === "allday") {
           const weekday = _hoistedOptions.find(el => el.name === "weekday")
           const day = next[weekday.value]
-          const message = new Ca(day, member.timezone).getAlldayColonyAction()
+          const message = new Ca(day, member.timezone).getAlldayColonyActions()
           message.setFooter({text: timezoneFooter(member.timezone)})
           interaction.reply({embeds: [message], ephemeral: true})
         }
@@ -173,6 +178,7 @@ module.exports = (client, AeInstance) => {
       default:
         break
     }
+    
     member.save()
   })
   

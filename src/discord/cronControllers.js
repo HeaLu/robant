@@ -5,6 +5,7 @@ const addHours = require('date-fns/addHours')
 const getTimezoneOffset = require('date-fns-tz/getTimezoneOffset')
 const config = require('../config')
 const { MessageEmbed } = require('discord.js')
+const Member = require('../models/memberModel')
 
 
 module.exports = (client, AeInstance) => {
@@ -58,16 +59,31 @@ module.exports = (client, AeInstance) => {
       } while (deleted.size != 0);
   
       const currentCa = new Ca(addHours(today, offset)).getHourColonyActions()
-      const dayCa = new Ca().getDayColonyActions()
+      const svsCa = new Ca().getSvsdayColonyActions()
       const nextCa = new Ca(addHours(today, 1*1+offset*1)).getHourColonyActions()
       const overnextCa = new Ca(addHours(today, 2*1+offset*1)).getHourColonyActions()
       currentCa.setTitle("Current colony actions")
       nextCa.setTitle("Next hour colony actions")
       overnextCa.setTitle("In two hours colony actions")
       
-      client.channels.cache.get(config.channels.ca).send({embeds: [currentCa, nextCa, overnextCa, dayCa]})
+      client.channels.cache.get(config.channels.ca).send({embeds: [currentCa, nextCa, overnextCa, svsCa]})
     }, null, true, 'UTC')
   
     colonyactions.start()
   }
+
+  const colonyactions = new CronJob('00 30 00 * * *', async function () {
+    const today = new Date()
+    const members = await Member.find({dailyMail: true})
+    for (const member of members) {
+      const svsCa = new Ca(today, member.timezone).getSvsdayColonyActions()
+      const dayCa = new Ca(today, member.timezone).getAlldayColonyActions()
+      const user = await client.users.fetch(member.discordId)
+      user.send({embeds: [svsCa, dayCa]})
+    }
+    
+  }, null, true, 'UTC')
+
+  colonyactions.start()
+
 }
