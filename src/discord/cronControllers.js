@@ -1,6 +1,7 @@
 const CronJob = require('cron').CronJob
 const daily = require('../services/dailyServices')
 const Ca = require('../services/caServices')
+const subHours = require('date-fns/subHours')
 const addHours = require('date-fns/addHours')
 const getTimezoneOffset = require('date-fns-tz/getTimezoneOffset')
 const config = require('../config')
@@ -50,18 +51,18 @@ module.exports = (client, AeInstance) => {
   
   if (config.channels.ca) {
     const colonyactions = new CronJob('00 05 * * * *', async function () {
-      const today = new Date()
-      const offset = getTimezoneOffset('Europe/Paris', today) / 60 / 60 / 1000
+      const offset = getTimezoneOffset('Europe/Paris', new Date()) / 60 / 60 / 1000
+      const today = subHours(new Date(), offset)
       const channel = await client.channels.fetch(config.channels.ca)
       let deleted;
       do {
         deleted = await channel.bulkDelete(100);
       } while (deleted.size != 0);
   
-      const currentCa = new Ca(addHours(today, offset)).getHourColonyActions()
       const svsCa = new Ca().getSvsdayColonyActions()
-      const nextCa = new Ca(addHours(today, 1*1+offset*1)).getHourColonyActions()
-      const overnextCa = new Ca(addHours(today, 2*1+offset*1)).getHourColonyActions()
+      const currentCa = new Ca(today).getHourColonyActions()
+      const nextCa = new Ca(addHours(today, 1)).getHourColonyActions()
+      const overnextCa = new Ca(addHours(today, 2)).getHourColonyActions()
       currentCa.setTitle("Current colony actions")
       nextCa.setTitle("Next hour colony actions")
       overnextCa.setTitle("In two hours colony actions")
