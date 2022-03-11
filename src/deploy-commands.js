@@ -138,7 +138,41 @@ const commands = [
 				.addChoice('20h UTC', "13")
 				.addChoice('23h UTC', "14")		
 			)
+		),
+		new SlashCommandBuilder()
+		.setName('birthdate')
+		.setDescription('Set your birthdate')
+		.addIntegerOption(option => option
+			.setName('year')
+			.setDescription('Year of your birth')
+			.setRequired(true)
+			.setMinValue(1900)
+			.setMaxValue(2020)
 		)
+		.addIntegerOption(option => option
+			.setName('month')
+			.setDescription('Month of your birth')
+			.setRequired(true)
+			.addChoice('01-January', 0)
+			.addChoice('02-February', 1)
+			.addChoice('03-March', 2)
+			.addChoice('04-April', 3)
+			.addChoice('05-May', 4)
+			.addChoice('06-June', 5)
+			.addChoice('07-July', 6)
+			.addChoice('08-August', 7)
+			.addChoice('09-September', 8)
+			.addChoice('10-October', 9)
+			.addChoice('11-November', 10)
+			.addChoice('12-December', 11)
+		)
+		.addIntegerOption(option => option
+			.setName('day')
+			.setDescription('Day of your birth')
+			.setRequired(true)
+			.setMinValue(1)
+			.setMaxValue(31)
+		),
 ]
 	.map(command => command.toJSON());
 

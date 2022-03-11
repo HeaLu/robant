@@ -27,6 +27,11 @@ const memberSchema = new mongoose.Schema(
     dailyMail: {
       type: Boolean,
       default: false
+    },
+    birthdate: {
+      year: Number,
+      month: Number,
+      day: Number
     }
   },
   { timestamps: { createdAt: "created_at" } }

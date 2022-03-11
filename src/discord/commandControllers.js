@@ -29,6 +29,10 @@ const help = {
       value: `**/ca hour** to get hourly colony actions\n**/ca svs** to get daily colony actions matching with SvS\n**/ca allday** to get all colony action of a given day\n**/ca search** to find all hours in a day matching with given goal\n**/timezone** permits you to set your own timezone`
     },
     {
+      name: "🎂 Birthday",
+      value: "**/birthdate** register your birthdate to be announced by RobAnT"
+    },
+    {
       name: "🌎 Translator",
       value: "React with a flag 🇬🇧🇫🇷🇷🇺 (24 language availables) to get the translation of a text by private message"
     },
@@ -65,6 +69,20 @@ module.exports = (client, AeInstance) => {
     member.discordName = interaction.member.displayName
 
     switch (commandName) {
+      case "birthdate":
+        const year = _hoistedOptions.find(el => el.name === "year")
+        const month = _hoistedOptions.find(el => el.name === "month")
+        const monthDay = _hoistedOptions.find(el => el.name === "day")
+        member.birthdate = {
+          year: year.value,
+          month: month.value,
+          day: monthDay.value
+        }
+        const messageToDisplay = new MessageEmbed()
+        messageToDisplay.setColor("GREEN").setTitle(`Success`)
+        .setDescription("Your birthdate is sucessfully registered")
+        interaction.reply({embeds: [messageToDisplay], ephemeral: true})
+        break
       case "dailymail":
         const subscribe = _hoistedOptions.find(el => el.name === "subscribe")
         member.dailyMail = subscribe.value

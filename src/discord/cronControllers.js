@@ -7,9 +7,30 @@ const getTimezoneOffset = require('date-fns-tz/getTimezoneOffset')
 const config = require('../config')
 const { MessageEmbed } = require('discord.js')
 const Member = require('../models/memberModel')
+const getMonth = require('date-fns/getMonth')
+const getDate = require('date-fns/getDate')
+const getYear = require('date-fns/getYear')
 
 
 module.exports = (client, AeInstance) => {
+  const birthday = new CronJob('00 00 00 * * *', async function() {
+    const today = new Date()
+    const concerned = await Member.find({'birthdate.day': getDate(today), 'birthdate.month': getMonth(today)})
+    if (concerned.length > 0) {
+      const message = new MessageEmbed()
+      .setColor('BLUE')
+      .setTitle(`🎂 ${concerned.length} member${concerned.length > 1 ? 's celebrate their' : ' celebrate her/his'} birthday today`)
+      .setDescription('Happy birthday to you 🎉🥂🤜')
+      for (const member of concerned) {
+        message.addField(`${getYear(today) - member.birthdate.year} years`, `👏 <@!${member.discordId}>`)
+      }
+      message.setFooter({text: `Register your birthdate by typing /birthdate and don't forget !borek to offer ${concerned.length > 1 ? 'her/him' : 'them'} a drink !`})
+      if (config.channels.public) client.channels.cache.get(config.channels.public).send({embeds: [message]})
+    }
+  }, null, true, 'UTC');
+  
+  birthday.start();
+
   const dailyAnt = new CronJob('00 00 00 * * *', async function() {
     const today = new Date()
     if (config.channels.officers) client.channels.cache.get(config.channels.officers).send(daily.getGameDaily(today))
