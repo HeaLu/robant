@@ -69,6 +69,67 @@ module.exports = (client, AeInstance) => {
     member.discordName = interaction.member.displayName
 
     switch (commandName) {
+      case "duel":
+        const total = _hoistedOptions.find(el => el.name === "total")
+        const first = _hoistedOptions.find(el => el.name === "first")
+        const second = _hoistedOptions.find(el => el.name === "second")
+        const third = _hoistedOptions.find(el => el.name === "third")
+        const verify = [total, first, second, third].filter(el => el.value === 0)
+        if (total.value === 0) {
+          const message = new MessageEmbed()
+          message.setColor("RED").setTitle(`Error`)
+          .setDescription("The total can't be equal to 0")
+          interaction.reply({embeds: [message], ephemeral: true})
+          break
+        }
+        if (verify.length > 1) {
+          const message = new MessageEmbed()
+          message.setColor("RED").setTitle(`Error`)
+          .setDescription(`There are ${verify.length} powers set to 0, 0 or 1 expected`)
+          interaction.reply({embeds: [message], ephemeral: true})
+          break
+        } else {
+          let order = ["1st", "Pro", "2nd"]
+          let army = []
+          let army2 = []
+          army[first.name] = first.value !== 0 ? first.value : Math.round((total.value - second.value - third.value)*10)/10
+          army2.push(army[first.name])
+          army[second.name] = second.value !== 0 ? second.value : Math.round((total.value - first.value - third.value)*10)/10
+          army2.push(army[second.name])
+          army[third.name] = third.value !== 0 ? third.value : Math.round((total.value - second.value - first.value)*10)/10
+          army2.push(army[third.name])
+
+          let battleOrder = []
+
+          if (army2[0] === Math.max(...army2)) {
+            battleOrder.push(order[2])
+            order.pop()
+          } else if (army2[0] === Math.min(...army2)) {
+            battleOrder.push(order[0])
+            order.shift()
+          } else {            
+            battleOrder.push(order[1])
+            order.splice(1, 1)
+          }
+
+          if (army2[1] === Math.max(...army2)) {
+            battleOrder.push(order[1])
+            battleOrder.push(order[0])
+          } else {
+            battleOrder.push(order[0])
+            battleOrder.push(order[1])
+          }
+          
+
+          const message = new MessageEmbed()
+          .setColor("BLUE").setTitle(`🪖 Recommended battle order`)
+          .setDescription(`**${battleOrder[0]} / ${battleOrder[1]} / ${battleOrder[2]}**. ${verify.length === 0 ? 'There is no hidden army' : `Hidden army **${verify[0].name}** with power **${army[verify[0].name]}M**`}` )
+          .addField(`First fight `, `⚔️ **${battleOrder[0]} army __vs__** 🛡️ ${army[first.name]}M`)
+          .addField(`Second fight `, `⚔️ **${battleOrder[1]} army __vs__** 🛡️ ${army[second.name]}M`)
+          .addField(`Third fight `, `⚔️ **${battleOrder[2]} army __vs__** 🛡️ ${army[third.name]}M`)
+          interaction.reply({embeds: [message], ephemeral: true})
+        }
+        break
       case "birthdate":
         const year = _hoistedOptions.find(el => el.name === "year")
         const month = _hoistedOptions.find(el => el.name === "month")
