@@ -96,7 +96,7 @@ module.exports = class Ca {
   
     const message = new MessageEmbed()
     .setColor(comp.svs.length > 0 ? 'GREEN' : 'RED')
-    .setTitle(day+" colony actions - "+this._date.getHours()+"h"+ " to "+addHours(this._date, 1).getHours()+"h")
+    .setTitle(day+" colony actions - "+this._date.getHours()+"h"+ " to "+addHours(this._date, 1).getHours()+"h " + " - " + this._timezone)
     .setDescription(comp.svs.length > 0 ? `🟢 ${comp.svs.length} shared goal${comp.svs.length > 1 ? "s" : ""} with SvS` : "🔴 no shared goal with SvS")
     .setThumbnail(comp.svs.length > 0 ? 'https://upload.wikimedia.org/wikipedia/fr/thumb/3/3b/Raspberry_Pi_logo.svg/langfr-130px-Raspberry_Pi_logo.svg.png' : 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/03/Forbidden_Symbol_Transparent.svg/400px-Forbidden_Symbol_Transparent.svg.png')
     if (comp.svs.length > 0 && comp.others.length > 0) {
@@ -109,7 +109,6 @@ module.exports = class Ca {
     } else if (comp.others.length > 0) {
       message.addField(`Goal${comp.others.length > 1 ? "s" : ""}`, dispPasok)
     }
-    message.setFooter({text: `Timezone set to ${this._timezone}`})
     
     return message
   }
@@ -197,7 +196,7 @@ module.exports = class Ca {
       }
       message.addField(dispHours,dispObj)
     }
-    message.setFooter({text: `Timezone set to ${this._timezone}`})
+    message.setFooter({text: `Time zone: ${this._timezone}. Type /help to see all RobAnT features`})
   
     return message
   }

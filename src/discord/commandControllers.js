@@ -183,21 +183,18 @@ module.exports = (client, AeInstance) => {
           const hours = _hoistedOptions.find(el => el.name === "hours")
           const day = next[weekday.value].setHours(hours.value)
           const message = new Ca(day, member.timezone).getHourColonyActions()
-          message.setFooter({text: timezoneFooter(member.timezone)})
           interaction.reply({embeds: [message], ephemeral: true})
         }
         if (_subcommand === "svs") {
           const weekday = _hoistedOptions.find(el => el.name === "weekday")
           const day = next[weekday.value]
           const message = new Ca(day, member.timezone).getSvsdayColonyActions()
-          message.setFooter({text: timezoneFooter(member.timezone)})
           interaction.reply({embeds: [message], ephemeral: true})
         }
         if (_subcommand === "allday") {
           const weekday = _hoistedOptions.find(el => el.name === "weekday")
           const day = next[weekday.value]
           const message = new Ca(day, member.timezone).getAlldayColonyActions()
-          message.setFooter({text: timezoneFooter(member.timezone)})
           interaction.reply({embeds: [message], ephemeral: true})
         }
         if (_subcommand === "search") {
@@ -205,7 +202,6 @@ module.exports = (client, AeInstance) => {
           const goal = _hoistedOptions.find(el => el.name === "goal")
           const day = next[weekday.value]
           const message = new Ca(day, member.timezone).searchCa(goal.value)
-          message.setFooter({text: timezoneFooter(member.timezone)})
           interaction.reply({embeds: [message], ephemeral: true})
         }
         break
