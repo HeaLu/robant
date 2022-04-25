@@ -1,5 +1,5 @@
 const {CronJob, CronTime} = require('cron')
-const { formatDistance, startOfDay, subHours, startOfHour, nextFriday, format } = require('date-fns')
+const { formatDistance, startOfDay, subHours, addHours, startOfHour, nextFriday, format } = require('date-fns')
 const config = require('../config')
 const { MessageEmbed } = require('discord.js')
 
@@ -18,21 +18,21 @@ module.exports = class Ae {
       if (channel.name !== `🌴-ae-in-${diff}`) channel.setName(`🌴-ae-in-${diff}`)
     }, null, false, 'UTC', this)
 
-    this._remind1 = new CronJob(subHours(this._date, -1), async function () {
+    this._remind1 = new CronJob(new Date(), async function () {
       const message = new MessageEmbed()
       .setColor('BLUE')
       .setTitle("Reminder")
       .setThumbnail("https://www.clipartmax.com/png/full/18-185824_bell-icon-bell-icon.png")
-      .setDescription(`<@&${config.roles.members}> don't forget Alliance Expedition today at ${this._date.getUTCHours()}h UTC`)
+      .setDescription(`<@&${config.roles.members}> don't forget Alliance Expedition today at **__${this._date.getUTCHours()}h UTC__**`)
       this._client.channels.cache.get(config.channels.expedition).send({embeds: [message]})
     }, null, false, 'UTC', this)
 
-    this._remind2 = new CronJob(subHours(this._date, -1), async function () {
+    this._remind2 = new CronJob(new Date(), async function () {
       const message = new MessageEmbed()
       .setColor('BLUE')
       .setTitle("Reminder")
       .setThumbnail("https://www.clipartmax.com/png/full/18-185824_bell-icon-bell-icon.png")
-      .setDescription(`<@&${config.roles.members}> Alliance Expedition in 1 hour, prepare yourself for battle !`)
+      .setDescription(`<@&${config.roles.members}> Alliance Expedition in **__1 hour__**, prepare yourself for battle !`)
       this._client.channels.cache.get(config.channels.expedition).send({embeds: [message]})
     }, null, false, 'UTC', this)
   }
@@ -87,12 +87,23 @@ module.exports = class Ae {
   start(date) {
     if (!this.running) {
       this._date = startOfHour(date)
+      const guild = this._client.guilds.cache.get(config.discord.guildId)
+      guild.scheduledEvents.create({
+        name: "Alliance Expedition",
+        scheduledStartTime: this._date,
+        scheduledEndTime: addHours(this._date, 1),
+        privacyLevel: "GUILD_ONLY",
+        entityType: "EXTERNAL",
+        entityMetadata: {
+          location: "In the jungle"
+        }
+      })
       this._job.start()
-      if (this._date < startOfDay(this._date)) {
-        this._remind1.setTime(new CronTime(startOfDay(this._date)))
+      if (this._date > startOfDay(this._date)) {
+        this._remind1.setTime(new CronTime(addHours(startOfDay(this._date), 2)))
         this._remind1.start()
       }
-      if (this._date < subHours(this._date, 1)) {
+      if (this._date > subHours(this._date, 1)) {
         this._remind2.setTime(new CronTime(subHours(this._date, 1)))
         this._remind2.start()
       }
@@ -109,14 +120,20 @@ module.exports = class Ae {
     if (channel.name !== "🌴-alliance-expedition") channel.setName("🌴-alliance-expedition")
     if (this._job.running) {
       this._job.stop()
-      return "AE countdown **stoped**"
+      return "AE countdown **stopped**"
     } else {
       return "Error, AE countdown wasn't running"
     }
   }  
 
   async restart(newdate) {
-    await this.stop()
-    this.start(newdate)
+    try {
+      await this.stop()
+      this.start(newdate)
+      return true
+    }
+    catch (e) {
+      return false
+    }
   }
 }

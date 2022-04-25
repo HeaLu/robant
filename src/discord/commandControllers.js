@@ -164,8 +164,8 @@ module.exports = (client, AeInstance) => {
           const test = utcToZonedTime(new Date(), set.value)
           if (isNaN(test)) {
             const message = new MessageEmbed()
-            message.setColor("RED").setTitle("Error while detecting your timezone")
-            .setDescription('Are you sure it\'s in a valid format (example "Europe/Paris") ? You can find all timezones [by clicking here](https://timezonedb.com/time-zones), expected codes are in the 3rd column')
+            message.setColor("RED").setTitle("Error while detecting your time zone")
+            .setDescription('Are you sure it\'s in a valid format (example "Europe/Paris") ? You can find all time zones [by clicking here](https://timezonedb.com/time-zones), expected codes are in the 3rd column')
             interaction.reply({embeds: [message], ephemeral: true})
             break
           } else {
@@ -239,6 +239,8 @@ module.exports = (client, AeInstance) => {
           break
         }
         if (_subcommand === "restart") {
+          const friday = isFriday(new Date()) ? new Date() : next["friday"]
+          friday.setUTCHours(parseInt(hour.value))
           const result = await AeInstance.restart(friday)
           if (result) {
             interaction.reply({content: "AE countdown **restarted**. Don't worry if it seems it doesn't work, the refresh time is each 5 minutes (according to Discord rules)", ephemeral: true})

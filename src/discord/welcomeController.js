@@ -3,13 +3,15 @@ const config = require("../config");
 
 module.exports = client => {
   client.on('guildMemberAdd', async member => {
+    if (member.guild.id !== config.discord.guildId) return
+
     const welcome = await client.channels.fetch(config.channels.welcome)
+    
     let deleted
     do {
       deleted = await welcome.bulkDelete(100, true)
     } while (deleted.size != 0)
 
-    if (member.guild.id !== config.discord.guildId) return
 
     await member.roles.add(config.roles.guests)
 

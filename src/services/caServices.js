@@ -129,7 +129,7 @@ module.exports = class Ca {
       const name = `${this.getZonedHours(i)}h, ${this.getZonedHours(i*1+8)}h and ${this.getZonedHours(i*1+16)}h`
       message.addField(name, content)
     }
-    message.setFooter({text: `Timezone set to ${this._timezone}`})
+    message.setFooter({text: `Timezone: ${this._timezone}`})
   
     return message
   }
@@ -165,7 +165,7 @@ module.exports = class Ca {
     .setTitle(goals[goal].pic+" - "+goals[goal].label)
     .setDescription(content)
     .setThumbnail("https://www.pinclipart.com/picdir/big/142-1425732_marine-clipart.png")
-    message.setFooter({text: `Timezone set to ${this._timezone}`})
+    message.setFooter({text: `Time zone: ${this._timezone}`})
   
     return message
   }
