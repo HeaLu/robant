@@ -11,7 +11,7 @@ const langs = [
   {short: 'ES', label: 'Spanish', flags: ['🇪🇸']},
   {short: 'ET', label: 'Estonian', flags: ['🇪🇪']},
   {short: 'FI', label: 'Finnish', flags: ['🇫🇮']},
-  {short: 'FR', label: 'French', flags: ['🇫🇷','🇨🇵']},
+  {short: 'FR', label: 'French', flags: ['🇫🇷', '🇨🇵', '🇲🇫']},
   {short: 'HU', label: 'Hungarian', flags: ['🇭🇺']},
   {short: 'IT', label: 'Italian', flags: ['🇮🇹']},
   {short: 'JA', label: 'Japanese', flags: ['🇯🇵']},
